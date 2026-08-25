@@ -40,6 +40,9 @@ upload/*
 !upload/sale/delivery/
 !upload/sale/delivery/logotip/
 !upload/sale/delivery/logotip/**
+!upload/sale/paysystem/
+!upload/sale/paysystem/logotip/
+!upload/sale/paysystem/logotip/**
 
 # --- Логи ---
 *.log
