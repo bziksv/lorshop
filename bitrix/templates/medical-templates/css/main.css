@@ -4676,3 +4676,91 @@ ol,ul
         display: none;
     }
 }
+
+/* Popup forms / city selector — always hidden until bPopup opens */
+.mfeedback-p{
+    max-width: 430px;
+    text-align: center;
+    display: none;
+    background: #FFF;
+}
+.mfeedback-p .button.b-close{
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    background: #FFF;
+    border-radius: 50%;
+    padding: 0 3px;
+    line-height: 18px;
+    font-size: 21px;
+    cursor: pointer;
+    border: 1px solid #8080803b;
+}
+.mfeedback-p .mfeedback-p-head{
+    color: #545d6f;
+    font-size: 24px;
+    text-transform: uppercase;
+    font-weight: 500;
+    background: #f0f0f0;
+    margin: 0 0 20px;
+    padding: 20px;
+    border-bottom: 1px solid #E5E5E5;
+}
+.mfeedback-p .mfeedback-p-footer{
+    background: #f0f0f0;
+    margin: 0;
+    padding: 30px;
+    border-top: 1px solid #E5E5E5;
+}
+.mfeedback-p .mfeedback-p-footer .subscribe__btn{
+    margin-bottom: 0;
+}
+.mfeedback-p .mf-name{
+    margin-bottom: 10px;
+    text-align: left;
+    padding: 0 30px;
+}
+.mfeedback-p .mf-name input[type="text"],
+.mfeedback-p .mf-name textarea{
+    border: 1px solid #E5E5E5;
+    width: 100%;
+    padding: 10px;
+}
+.mfeedback-p .mf-ok-text{
+    color: #66b3d4;
+    font-size: 22px;
+    font-weight: bold;
+    padding: 30px 25px 50px;
+}
+
+/* Consent checkbox custom validation */
+input.js-pd-consent{
+    accent-color: #1aa6a0;
+    vertical-align: top;
+    margin-top: 3px;
+}
+input.js-pd-consent.pd-consent-invalid{
+    outline: 2px solid #c82c30;
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+.pd-consent-error{
+    display: block;
+    margin: 8px 0 0;
+    padding: 8px 12px;
+    font-size: 13px;
+    line-height: 1.35;
+    color: #8a1f22;
+    background: #fdeced;
+    border-left: 3px solid #c82c30;
+    border-radius: 2px;
+}
+.mfeedback-p .pd-consent-error,
+.footer .pd-consent-error{
+    text-align: left;
+}
+.footer .pd-consent-error{
+    color: #ffd0d0;
+    background: rgba(200, 44, 48, 0.25);
+    border-left-color: #ff6b6b;
+}

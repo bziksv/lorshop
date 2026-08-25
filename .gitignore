@@ -34,6 +34,12 @@ upload/tmp/
 
 # --- Пользовательские файлы / медиа ---
 upload/*
+!upload/legal/
+!upload/legal/**
+!upload/sale/
+!upload/sale/delivery/
+!upload/sale/delivery/logotip/
+!upload/sale/delivery/logotip/**
 
 # --- Логи ---
 *.log

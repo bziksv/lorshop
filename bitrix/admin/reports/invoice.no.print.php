@@ -207,8 +207,8 @@ while ($ar_tax_list = $db_tax_list->Fetch())
             bottom: -115pxpx;
         }
     </style>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript" src="/bitrix/templates/medical-templates/js/jquery-3.3.1.min.js"></script>
+    <script src="/bitrix/templates/medical-templates/js/jquery-ui.js"></script>
 </head>
 <body>
 <div class="invoice_menu no_print">

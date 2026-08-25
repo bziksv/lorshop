@@ -125,20 +125,6 @@ $APPLICATION->IncludeComponent(
 
 	<?endforeach;?>
 <?endif;?>
-<?if ($arResult["USE_CAPTCHA"] == "Y"):?>
-		<input type="hidden" name="captcha_sid" value="<?=$arResult["CAPTCHA_CODE"]?>" />
-
-		<div class="bx-authform-formgroup-container">
-			<div class="bx-authform-label-container">
-				<span class="bx-authform-starrequired">*</span><?=GetMessage("CAPTCHA_REGF_PROMT")?>
-			</div>
-			<div class="bx-captcha"><img src="/bitrix/tools/captcha.php?captcha_sid=<?=$arResult["CAPTCHA_CODE"]?>" width="180" height="40" alt="CAPTCHA" /></div>
-			<div class="bx-authform-input-container">
-				<input type="text" name="captcha_word" maxlength="50" value="" autocomplete="off"/>
-			</div>
-		</div>
-
-<?endif?>
 		<div class="bx-authform-formgroup-container">
 			<div class="bx-authform-label-container">
 			</div>
@@ -146,8 +132,8 @@ $APPLICATION->IncludeComponent(
 
 <div>
 	<label style="color: #66797f;">
-  <input type="checkbox" required>
-				<span>Нажимая на эту кнопку, я даю свое согласие на обработку персональных данных в соответствии с нашей <a target="_blank" href="/upload/politics-lorshop.png">политикой</a>.</span>
+  <input type="checkbox" class="js-pd-consent">
+				<span>Нажимая на эту кнопку, я даю свое <a target="_blank" href="/upload/legal/legal-consent.png">согласие на обработку персональных данных</a> в соответствии с нашей <a target="_blank" href="/upload/legal/legal-personal-data.png">политикой обработки персональных данных</a>.</span>
 </label>
 </div>
 

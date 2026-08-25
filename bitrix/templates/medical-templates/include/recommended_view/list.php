@@ -30,10 +30,16 @@
                     <input type="text" class="goods__counter_input" id="goods__counter_input_<?=$item['ID']?>" value="1" readonly>
                     <div class="goods__counter_add">+</div>
                 </div>
-                <? if(count($item['PROPERTIES']['ARTICLS']['VALUE']) > 1): ?>
-                    <a href="javascript:void(0)" class="goods__buy" onclick="$('#more_option_<?=$item[ID]?>').bPopup({zIndex:1000});" data-text="Купить"><?=($item["JS_HIDE"] == "N") ? "Купить" : "" ?></a>
+                <?
+                $articles = $item['PROPERTIES']['ARTICLS']['VALUE'] ?? null;
+                if (!is_array($articles)) {
+                    $articles = ($articles !== null && $articles !== '') ? array($articles) : array();
+                }
+                ?>
+                <? if(count($articles) > 1): ?>
+                    <a href="javascript:void(0)" class="goods__buy" onclick="$('#more_option_<?=$item['ID']?>').bPopup({zIndex:1000});" data-text="Купить"><?=($item["JS_HIDE"] == "N") ? "Купить" : "" ?></a>
                 <?else:?>
-                    <input type="hidden" name="article" value="<?=$item['PROPERTIES']['ARTICLS']['VALUE'][0]?>">
+                    <input type="hidden" name="article" value="<?=$articles[0] ?? ''?>">
                     <a href="javascript:void(0)" class="goods__buy" onclick="addToBasket2(<?=$item['ID']?>, $('#goods__counter_input_<?=$item['ID']?>').val(),this);" data-text="Купить"><?=($item["JS_HIDE"] == "N") ? "Купить" : "" ?></a>
                 <?endif;?>
 

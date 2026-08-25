@@ -61,13 +61,13 @@ $APPLICATION->SetTitle("Заказы");
 		),
 		"PROPS_FADE_LIST_2" => array(
 		),
-		"USER_CONSENT" => "Y",
+		"USER_CONSENT" => "N",
 		"USER_CONSENT_ID" => "1",
-		"USER_CONSENT_IS_CHECKED" => "Y",
+		"USER_CONSENT_IS_CHECKED" => "N",
 		"USER_CONSENT_IS_LOADED" => "N",
 		"ACTION_VARIABLE" => "soa-action",
 		"PATH_TO_AUTH" => "/auth/",
-		"DISABLE_BASKET_REDIRECT" => "N",
+		"DISABLE_BASKET_REDIRECT" => "Y",
 		"USE_PHONE_NORMALIZATION" => "Y",
 		"PRODUCT_COLUMNS_VISIBLE" => array(
 			0 => "PREVIEW_PICTURE",

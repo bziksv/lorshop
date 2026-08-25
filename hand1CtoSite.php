@@ -69,7 +69,7 @@ else
         <input type="submit">
     </form>
 
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/bitrix/templates/medical-templates/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="http://malsup.github.com/jquery.form.js"></script>
     <script type="text/javascript">
         jQuery(function ($) {

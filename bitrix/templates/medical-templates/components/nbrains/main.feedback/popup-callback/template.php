@@ -10,7 +10,7 @@ if(!defined("B_PROLOG_INCLUDED")||B_PROLOG_INCLUDED!==true)die();
  * @global CUser $USER
  */
 ?>
-<div class="mfeedback-p" id="callback">
+<div class="mfeedback-p" id="callback" data-params-hash="<?=$arResult["PARAMS_HASH"]?>">
 
 	<span class="button b-close"><span>&times;</span></span>
 
@@ -53,20 +53,16 @@ if(strlen($arResult["OK_MESSAGE"]) > 0):?>
 
 	<? endforeach; ?>
 
-    <?if($arParams["USE_CAPTCHA"] == "Y"):?>
-        <div class="mf-name">
-            <div class="g-recaptcha" data-sitekey="6LdmHK4UAAAAAGzcV1Ttdz-_C1sR9a0XEVNZn36u"></div>
-        </div>
-    <?endif;?>
-
-	<div class="mf-name">
-<div>
-	<label>
-  <input type="checkbox" required>
-				<span>Нажимая на эту кнопку, я даю свое согласие на обработку персональных данных в соответствии с нашей <a target="_blank" href="/upload/politics-lorshop.png">политикой</a>.</span>
-</label>
-</div>
-
+	<div class="mf-name" id="callback-consent-wrap">
+		<div>
+			<label>
+				<input type="checkbox" id="callback-consent" name="callback-consent">
+				<span>Нажимая на эту кнопку, я даю свое <a target="_blank" href="/upload/legal/legal-consent.png">согласие на обработку персональных данных</a> в соответствии с нашей <a target="_blank" href="/upload/legal/legal-personal-data.png">политикой обработки персональных данных</a>.</span>
+			</label>
+		</div>
+		<div class="mf-consent-error" style="display:none;color:#a94442;margin-top:8px;">
+			Необходимо дать согласие на обработку персональных данных
+		</div>
 	</div>
 		
 	<div class="mfeedback-p-footer">
@@ -80,15 +76,3 @@ if(strlen($arResult["OK_MESSAGE"]) > 0):?>
 <? endif; ?>
 
 </div>
-
-
-<?if(!empty($arResult["ERROR_MESSAGE"]) OR strlen($arResult["OK_MESSAGE"]) > 0):?>
-	<script>
-		$(function(){
-			$('#callback').bPopup({
-				zIndex:1000
-			});
-		});
-
-	</script>
-<?endif;?>

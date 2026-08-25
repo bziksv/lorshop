@@ -22,6 +22,156 @@ $('.callback-btn').click(function(){
     });
 });
 
+function ensureBitrixSessid($form) {
+    var $sessid = $form.find('input[name="sessid"]');
+    if ($sessid.length && !$sessid.val() && typeof BX !== 'undefined' && typeof BX.bitrix_sessid === 'function') {
+        $sessid.val(BX.bitrix_sessid());
+    }
+}
+
+function validateConsentForm($form, checkboxSelector, wrapSelector) {
+    var $checkbox = $form.find(checkboxSelector);
+    var $wrap = $form.find(wrapSelector);
+    var $error = $wrap.find('.mf-consent-error');
+
+    if ($checkbox.length && !$checkbox.is(':checked')) {
+        $wrap.addClass('has-error');
+        $error.show();
+        if (typeof alertify !== 'undefined') {
+            alertify.error('Необходимо дать согласие на обработку персональных данных');
+        }
+        return false;
+    }
+
+    $wrap.removeClass('has-error');
+    $error.hide();
+    return true;
+}
+
+$(document).on('submit', '#callback form', function(e) {
+    var $form = $(this);
+    ensureBitrixSessid($form);
+    if (!validateConsentForm($form, '#callback-consent', '#callback-consent-wrap')) {
+        e.preventDefault();
+        return false;
+    }
+});
+
+$(document).on('change', '#callback-consent', function() {
+    $('#callback-consent-wrap').removeClass('has-error').find('.mf-consent-error').hide();
+});
+
+$(document).on('submit', '.mfeedback form', function(e) {
+    var $form = $(this);
+    ensureBitrixSessid($form);
+    if (!validateConsentForm($form, '#feedback-consent', '#feedback-consent-wrap')) {
+        e.preventDefault();
+        return false;
+    }
+});
+
+$(document).on('change', '#feedback-consent', function() {
+    $('#feedback-consent-wrap .mf-consent-error').hide();
+});
+
+function openCallbackPopup() {
+    if ($.fn.bPopup) {
+        $('#callback').bPopup({ zIndex: 1000 });
+    }
+}
+
+function handleCallbackFormResult() {
+    var params = new URLSearchParams(window.location.search);
+    var successHash = params.get('success');
+    var expectedHash = $('#callback').data('params-hash');
+    var okText = $.trim($('#callback .mf-ok-text').text());
+
+    if (successHash && expectedHash && successHash === expectedHash) {
+        openCallbackPopup();
+        if (typeof alertify !== 'undefined') {
+            alertify.success(okText || 'Спасибо, ваше сообщение принято.');
+        }
+        if (window.history && window.history.replaceState) {
+            var url = new URL(window.location.href);
+            url.searchParams.delete('success');
+            window.history.replaceState({}, document.title, url.pathname + url.search + url.hash);
+        }
+        return;
+    }
+
+    if ($('#callback .errortext').length) {
+        openCallbackPopup();
+        if (typeof alertify !== 'undefined') {
+            alertify.error($.trim($('#callback .errortext').first().text()));
+        }
+        return;
+    }
+}
+
+$(function() {
+    handleCallbackFormResult();
+});
+
+(function ($) {
+    var CONSENT_MSG = 'Отметьте согласие на обработку персональных данных';
+
+    function consentBox($root) {
+        return $root.find('input.js-pd-consent').first();
+    }
+
+    function clearConsentError($cb) {
+        if (!$cb || !$cb.length) return;
+        $cb.removeClass('pd-consent-invalid');
+        $cb.closest('label').parent().find('.pd-consent-error').remove();
+    }
+
+    function showConsentError($cb) {
+        if (!$cb || !$cb.length) return;
+        var $wrap = $cb.closest('label').parent();
+        $cb.addClass('pd-consent-invalid');
+        if (!$wrap.children('.pd-consent-error').length) {
+            $wrap.append(
+                $('<div class="pd-consent-error" role="alert"></div>').text(CONSENT_MSG)
+            );
+        }
+        try { $cb[0].scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (e) {}
+        $cb.focus();
+    }
+
+    function consentOk($root) {
+        var $cb = consentBox($root);
+        if (!$cb.length) return true;
+        if ($cb.prop('checked')) {
+            clearConsentError($cb);
+            return true;
+        }
+        showConsentError($cb);
+        return false;
+    }
+
+    $(document).on('change', 'input.js-pd-consent', function () {
+        if (this.checked) clearConsentError($(this));
+    });
+
+    $(document).on('submit', 'form', function (e) {
+        if ($(this).closest('#callback').length) return;
+        if (!consentOk($(this))) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            return false;
+        }
+    });
+
+    $(document).on('click', '.subscribe__form .subscribe__btn, .subscribe__form button[type="submit"]', function (e) {
+        var $form = $(this).closest('form');
+        if ($form.length && !consentOk($form)) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            return false;
+        }
+    });
+})(jQuery);
+
 
 
 var path = "/bitrix/templates/medical-templates/ajax/";

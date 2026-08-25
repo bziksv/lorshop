@@ -7,8 +7,8 @@ if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();
 $config = \Bitrix\Main\Web\Json::encode($arResult['CONFIG']);
 ?>
 <label data-bx-user-consent="<?=htmlspecialcharsbx($config)?>" class="main-user-consent-request">
-	<input type="checkbox" value="Y" <?=($arParams['IS_CHECKED'] ? 'checked' : '')?> name="<?=htmlspecialcharsbx($arParams['INPUT_NAME'])?>">
-	<a><?=htmlspecialcharsbx($arResult['INPUT_LABEL'])?></a>
+	<input type="checkbox" value="Y" <?=($arParams['IS_CHECKED'] ? 'checked' : '')?> name="<?=htmlspecialcharsbx($arParams['INPUT_NAME'])?>" class="js-pd-consent">
+	<span>Нажимая на эту кнопку, я даю свое <a target="_blank" href="/upload/legal/legal-consent.png">согласие на обработку персональных данных</a> в соответствии с нашей <a target="_blank" href="/upload/legal/legal-personal-data.png">политикой обработки персональных данных</a>.</span>
 </label>
 <script type="text/html" data-bx-template="main-user-consent-request-loader">
 	<div class="main-user-consent-request-popup">

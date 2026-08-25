@@ -105,8 +105,8 @@ $buttonId = $this->randString();
 
 <div>
 	<label>
-  <input type="checkbox" required>
-				<span>Нажимая на эту кнопку, я даю свое согласие на обработку персональных данных в соответствии с нашей <a target="_blank" href="/upload/politics-lorshop.png">политикой</a>.</span>
+  <input type="checkbox" class="js-pd-consent">
+				<span>Нажимая на эту кнопку, я даю свое <a target="_blank" href="/upload/legal/legal-consent.png">согласие на обработку персональных данных</a> в соответствии с нашей <a target="_blank" href="/upload/legal/legal-personal-data.png">политикой обработки персональных данных</a>.</span>
 </label>
 </div>
 
