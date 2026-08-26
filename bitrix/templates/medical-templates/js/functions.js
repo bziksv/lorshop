@@ -17,9 +17,7 @@ $('.cart__content > .cart_old_price').text($('.cart__content .cart__radio:checke
 
 
 $('.callback-btn').click(function(){
-    $('#callback').bPopup({
-        zIndex:1000
-    });
+    openCallbackPopup();
 });
 
 function ensureBitrixSessid($form) {
@@ -29,13 +27,16 @@ function ensureBitrixSessid($form) {
     }
 }
 
-function validateConsentForm($form, checkboxSelector, wrapSelector) {
+function validateConsentForm(formEl, checkboxSelector, wrapSelector) {
+    var $form = $(formEl);
     var $checkbox = $form.find(checkboxSelector);
-    var $wrap = $form.find(wrapSelector);
+    if (!$checkbox.length) {
+        $checkbox = $(checkboxSelector);
+    }
+    var $wrap = $(wrapSelector);
     var $error = $wrap.find('.mf-consent-error');
 
-    if ($checkbox.length && !$checkbox.is(':checked')) {
-        $wrap.addClass('has-error');
+    if (!$checkbox.length || !$checkbox.is(':checked')) {
         $error.show();
         if (typeof alertify !== 'undefined') {
             alertify.error('Необходимо дать согласие на обработку персональных данных');
@@ -43,31 +44,191 @@ function validateConsentForm($form, checkboxSelector, wrapSelector) {
         return false;
     }
 
-    $wrap.removeClass('has-error');
     $error.hide();
     return true;
 }
 
-$(document).on('submit', '#callback form', function(e) {
-    var $form = $(this);
-    ensureBitrixSessid($form);
-    if (!validateConsentForm($form, '#callback-consent', '#callback-consent-wrap')) {
-        e.preventDefault();
+function initCallbackFormFields() {
+    $('#callback input[name="PHONE"]').mask('+7 (999) 999 99 99');
+}
+
+function showCallbackStatus(type, message) {
+    var $status = $('#callback-status');
+    if (!$status.length) {
+        $status = $('<div id="callback-status" class="callback-status"></div>');
+        $('#callback .mfeedback-p-head').after($status);
+    }
+    $status.removeClass('callback-status--error callback-status--success callback-status--loading')
+        .addClass('callback-status--' + type)
+        .html(message)
+        .show();
+}
+
+function hideCallbackStatus() {
+    $('#callback-status').hide().empty();
+}
+
+function validateCallbackRequiredFields(formEl) {
+    var $form = $(formEl);
+    var fields = [
+        { name: 'NAME', label: 'ФИО' },
+        { name: 'PHONE', label: 'Телефон' },
+        { name: 'MAIL', label: 'E-mail' },
+        { name: 'QUERY', label: 'Ваш вопрос' }
+    ];
+    var errors = [];
+
+    fields.forEach(function(field) {
+        var value = $.trim($form.find('[name="' + field.name + '"]').val() || '');
+        if (!value) {
+            errors.push(field.label);
+        }
+    });
+
+    if (errors.length) {
+        showCallbackStatus('error', 'Заполните поля: ' + errors.join(', '));
+        if (typeof alertify !== 'undefined') {
+            alertify.error('Заполните все обязательные поля');
+        }
         return false;
     }
+
+    return true;
+}
+
+function extractCallbackHtml(html) {
+    var doc = new DOMParser().parseFromString(html, 'text/html');
+    var node = doc.getElementById('callback');
+    if (!node) {
+        return null;
+    }
+
+    return {
+        hash: node.getAttribute('data-params-hash') || '',
+        html: node.innerHTML
+    };
+}
+
+function applyCallbackHtml(data) {
+    var $callback = $('#callback');
+    $callback.attr('data-params-hash', data.hash);
+    $callback.html(data.html);
+    initCallbackFormFields();
+}
+
+function handleCallbackAjaxResponse(html) {
+    var data = extractCallbackHtml(html);
+    if (!data) {
+        showCallbackStatus('error', 'Не удалось обработать ответ сервера. Обновите страницу и попробуйте снова.');
+        if (typeof alertify !== 'undefined') {
+            alertify.error('Ошибка отправки формы');
+        }
+        return;
+    }
+
+    applyCallbackHtml(data);
+    ensureCallbackPopupOpen();
+
+    if ($('#callback .mf-ok-text').length) {
+        var okText = $.trim($('#callback .mf-ok-text').text()) || 'Спасибо, ваше сообщение принято.';
+        showCallbackStatus('success', okText);
+        if (typeof alertify !== 'undefined') {
+            alertify.success(okText);
+        }
+        return;
+    }
+
+    if ($('#callback .errortext').length) {
+        var errorText = $('#callback .errortext').map(function() {
+            return $.trim($(this).text());
+        }).get().join(' ');
+        showCallbackStatus('error', errorText);
+        if (typeof alertify !== 'undefined') {
+            alertify.error(errorText);
+        }
+        return;
+    }
+
+    showCallbackStatus('error', 'Не удалось отправить форму. Проверьте данные и попробуйте снова.');
+}
+
+function submitCallbackFormAjax(form) {
+    var $form = $(form);
+    var $btn = $form.find('[type="submit"]');
+    var btnText = $btn.val();
+    var postData = $form.serializeArray();
+    postData.push({
+        name: $btn.attr('name') || 'submit',
+        value: $btn.val() || 'Отправить'
+    });
+    $btn.prop('disabled', true).val('Отправка...');
+    showCallbackStatus('loading', 'Отправка заявки...');
+
+    $.ajax({
+        url: $form.attr('action') || window.location.pathname,
+        type: 'POST',
+        data: $.param(postData),
+        dataType: 'html',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    }).done(function(html) {
+        handleCallbackAjaxResponse(html);
+    }).fail(function() {
+        showCallbackStatus('error', 'Ошибка связи с сервером. Попробуйте ещё раз.');
+        if (typeof alertify !== 'undefined') {
+            alertify.error('Ошибка отправки. Попробуйте ещё раз.');
+        }
+    }).always(function() {
+        $btn.prop('disabled', false).val(btnText);
+    });
+}
+
+$(document).on('submit', '#callback form', function(e) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    var form = this;
+    var $form = $(form);
+    ensureBitrixSessid($form);
+    hideCallbackStatus();
+    if (!validateCallbackRequiredFields(form)) {
+        return false;
+    }
+    if (!validateConsentForm(form, '#callback-consent', '#callback-consent-wrap')) {
+        showCallbackStatus('error', 'Необходимо дать согласие на обработку персональных данных');
+        var consentWrap = document.getElementById('callback-consent-wrap');
+        if (consentWrap) {
+            consentWrap.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
+        return false;
+    }
+    submitCallbackFormAjax(form);
+    return false;
 });
 
 $(document).on('change', '#callback-consent', function() {
-    $('#callback-consent-wrap').removeClass('has-error').find('.mf-consent-error').hide();
+    $('#callback-consent-wrap .mf-consent-error').hide();
 });
 
+function submitFeedbackForm(form) {
+    if (form._consentSubmitting) {
+        return;
+    }
+    form._consentSubmitting = true;
+    HTMLFormElement.prototype.submit.call(form);
+}
+
 $(document).on('submit', '.mfeedback form', function(e) {
-    var $form = $(this);
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    var form = this;
+    var $form = $(form);
     ensureBitrixSessid($form);
-    if (!validateConsentForm($form, '#feedback-consent', '#feedback-consent-wrap')) {
-        e.preventDefault();
+    if (!validateConsentForm(form, '#feedback-consent', '#feedback-consent-wrap')) {
         return false;
     }
+    submitFeedbackForm(form);
+    return false;
 });
 
 $(document).on('change', '#feedback-consent', function() {
@@ -75,9 +236,18 @@ $(document).on('change', '#feedback-consent', function() {
 });
 
 function openCallbackPopup() {
-    if ($.fn.bPopup) {
-        $('#callback').bPopup({ zIndex: 1000 });
+    if (!$.fn.bPopup) {
+        return;
     }
+    var $el = $('#callback');
+    if ($el.is(':visible')) {
+        return;
+    }
+    $el.bPopup({ zIndex: 1000 });
+}
+
+function ensureCallbackPopupOpen() {
+    openCallbackPopup();
 }
 
 function handleCallbackFormResult() {

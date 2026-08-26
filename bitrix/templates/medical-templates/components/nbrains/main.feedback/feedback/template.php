@@ -60,11 +60,14 @@ if(strlen($arResult["OK_MESSAGE"]) > 0):?>
 
 	<? endforeach; ?>
 
-	<div class="mf-name">
+	<div class="mf-name" id="feedback-consent-wrap">
 		<label>
-			<input type="checkbox" class="js-pd-consent">
+			<input type="checkbox" id="feedback-consent" name="feedback-consent">
 			<span>Нажимая на эту кнопку, я даю свое <a target="_blank" href="/upload/legal/legal-consent.png">согласие на обработку персональных данных</a> в соответствии с нашей <a target="_blank" href="/upload/legal/legal-personal-data.png">политикой обработки персональных данных</a>.</span>
 		</label>
+		<div class="mf-consent-error" style="display:none;color:#a94442;margin-top:8px;">
+			Необходимо дать согласие на обработку персональных данных
+		</div>
 	</div>
 
 	<input type="hidden" name="PARAMS_HASH" value="<?=$arResult["PARAMS_HASH"]?>">
