@@ -1,4 +1,13 @@
-<?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();?>
+<?
+if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) {
+	// Include-only file — direct URL must not look like a page for crawlers/validators.
+	http_response_code(404);
+	header('Content-Type: text/plain; charset=utf-8');
+	header('X-Robots-Tag: noindex, nofollow');
+	echo 'Not Found';
+	die();
+}
+?>
 
 <div class="sidebar">
 

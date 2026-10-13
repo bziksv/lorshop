@@ -2,11 +2,25 @@
 class CNigesCookiesAcceptPublic
 {
 	/**
-	 * Inject cookie notice at the end of page generation.
+	 * Inject cookie notice before </body> (OnEpilog prints after </html> and breaks HTML).
 	 */
-	public static function OnEpilog()
+	public static function OnEndBufferContent(&$content)
 	{
-		global $APPLICATION;
+		if (!is_string($content) || $content === '') {
+			return;
+		}
+
+		if (PHP_SAPI === 'cli' || (defined('ADMIN_SECTION') && ADMIN_SECTION === true)) {
+			return;
+		}
+
+		if (stripos($content, 'nca-cookiesaccept-line') !== false) {
+			return;
+		}
+
+		if (stripos($content, '</body>') === false) {
+			return;
+		}
 
 		if (!CModule::IncludeModule(cookiesaccept_MODULE_ID)) {
 			return;
@@ -26,6 +40,17 @@ class CNigesCookiesAcceptPublic
 			return;
 		}
 
+		try {
+			$request = \Bitrix\Main\Context::getCurrent()->getRequest();
+			if ($request->isAjaxRequest()) {
+				return;
+			}
+		} catch (\Throwable $e) {
+			// ignore
+		}
+
+		global $APPLICATION;
+		ob_start();
 		$APPLICATION->IncludeComponent(
 			'niges:cookiesaccept',
 			'.default',
@@ -33,5 +58,17 @@ class CNigesCookiesAcceptPublic
 			false,
 			array('HIDE_ICONS' => 'Y')
 		);
+		$html = ob_get_clean();
+		if (!is_string($html) || trim($html) === '') {
+			return;
+		}
+
+		$content = preg_replace('/<\/body>/i', $html . '</body>', $content, 1);
+	}
+
+	/** @deprecated kept for old event registrations until reinstalled */
+	public static function OnEpilog()
+	{
+		// no-op: banner must be injected via OnEndBufferContent
 	}
 }
