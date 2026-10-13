@@ -19,7 +19,7 @@
 
                 <? if($item['DESCRIPTION']): ?>
                 <div class="goods__text">
-                    <?=$item['DESCRIPTION']?>
+                    <?=lorshopSanitizeHtml($item['DESCRIPTION'])?>
                 </div>
                 <? endif; ?>
             </div>

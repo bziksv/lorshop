@@ -19,7 +19,7 @@
 
                         <? if($arItem['DESCRIPTION']): ?>
                             <br/>
-                            <span class="goods__name__desc"><?=$arItem['DESCRIPTION']?></span>
+                            <div class="goods__name__desc"><?=lorshopSanitizeHtml($arItem['DESCRIPTION'])?></div>
                         <? endif; ?>
                     </a>
                     <div class="goods__info">

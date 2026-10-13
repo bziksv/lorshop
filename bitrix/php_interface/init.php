@@ -65,6 +65,17 @@ function lorshopSanitizeHtml($html, $imgAlt = '')
 		return $html;
 	}
 
+	// Drop H2 that duplicates page H1 (section/product NAME passed as $imgAlt)
+	if ($imgAlt !== '' && $imgAlt !== null) {
+		$titleNorm = preg_replace('/\s+/u', ' ', mb_strtolower(trim(html_entity_decode(str_replace("\xC2\xA0", ' ', strip_tags((string)$imgAlt)), ENT_QUOTES, 'UTF-8'))));
+		if ($titleNorm !== '') {
+			$html = preg_replace_callback('/<h2\b[^>]*>(.*?)<\/h2>/is', function ($m) use ($titleNorm) {
+				$t = preg_replace('/\s+/u', ' ', mb_strtolower(trim(html_entity_decode(str_replace("\xC2\xA0", ' ', strip_tags($m[1])), ENT_QUOTES, 'UTF-8'))));
+				return ($t === $titleNorm) ? '' : $m[0];
+			}, $html);
+		}
+	}
+
 	// Cyrillic "с" typed instead of Latin "c" in #ccc / #cccccc
 	$html = preg_replace('/#[сС]{6}\b/u', '#cccccc', $html);
 	$html = preg_replace('/#[сС]{3}\b/u', '#ccc', $html);
@@ -73,8 +84,16 @@ function lorshopSanitizeHtml($html, $imgAlt = '')
 	// Invalid CSS: background-color: none
 	$html = preg_replace('/background-color\s*:\s*none\b/i', 'background-color: transparent', $html);
 
+	// Mistyped empty end-tag </> (usually was </span>)
+	$html = str_replace('</>', '</span>', $html);
+
 	// Unescaped "<" before a digit in text (e.g. "шум <35 дБ")
 	$html = preg_replace('/<(?=\d)/', '&lt;', $html);
+
+	// style="...;class=" loading= → style="...;" loading=  (CSS "class" parse error)
+	$html = preg_replace('/(style="[^"]*?);\s*class="\s+(?=[a-z_]+=)/i', '$1;" ', $html);
+	$html = preg_replace('/(style="[^"]*?);\s*class="/i', '$1;" class="', $html);
+	$html = preg_replace('/\sclass="\s+(?=[a-z_]+=)/i', ' ', $html);
 
 	// <figure margin-left: 25px;> → <figure style="margin-left: 25px;">
 	$html = preg_replace_callback('/<figure\b([^>]*)>/i', function ($m) {
@@ -100,6 +119,20 @@ function lorshopSanitizeHtml($html, $imgAlt = '')
 		if (preg_match('/\ssrc\s*=\s*(["\'])\s*\1/i', $attrs)) {
 			return '';
 		}
+		// Escaped markup leaked into style="...&lt;/figure&gt;..."
+		if (preg_match('/\sstyle\s*=\s*"([^"]*)"/i', $attrs, $sm) && stripos($sm[1], '&lt;') !== false) {
+			$css = preg_replace('/&lt;.*$/i', '', $sm[1]);
+			$css = rtrim($css, " \t;");
+			$attrs = preg_replace('/\sstyle\s*=\s*"[^"]*"/i', ' style="'.$css.'"', $attrs);
+		}
+		// CSS properties wrongly emitted as attributes, including "color:=""" form
+		$attrs = preg_replace('/\s[a-z-]+:\s*=\s*"[^"]*"/i', '', $attrs);
+		$attrs = preg_replace(
+			'/\s(?:color|display|flex-direction|gap|margin(?:-(?:top|right|bottom|left))?|padding|float|border-radius|box-shadow|background(?:-color)?|font-size|line-height|max-width)\s*=\s*"[^"]*"/i',
+			'',
+			$attrs
+		);
+		$attrs = preg_replace('/\sclass\s*=\s*""/', '', $attrs);
 		if (!preg_match('/\salt\s*=/i', $attrs)) {
 			$alt = htmlspecialchars((string)$imgAlt, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 			$attrs .= ' alt="'.$alt.'"';
@@ -114,6 +147,22 @@ function lorshopSanitizeHtml($html, $imgAlt = '')
 
 	// <strong><p>…</p></strong> → <p>…</p>
 	$html = preg_replace('/<strong\b[^>]*>\s*(<(?:p|div|ul|ol|h[1-6])\b[\s\S]*?<\/(?:p|div|ul|ol|h[1-6])>)\s*<\/strong>/i', '$1', $html);
+
+	// strong/b → span with font-weight (SEO: too many <strong>/<b>)
+	$html = preg_replace_callback('/<(?:strong|b)\b([^>]*)>(.*?)<\/(?:strong|b)>/is', function ($m) {
+		$attrs = $m[1];
+		$inner = $m[2];
+		if (preg_match('/\sstyle\s*=\s*"([^"]*)"/i', $attrs, $sm)) {
+			$style = rtrim($sm[1], " \t;");
+			if (!preg_match('/font-weight\s*:/i', $style)) {
+				$style .= '; font-weight:700';
+			}
+			$attrs = preg_replace('/\sstyle\s*=\s*"[^"]*"/i', ' style="'.$style.'"', $attrs);
+		} else {
+			$attrs .= ' style="font-weight:700"';
+		}
+		return '<span'.$attrs.'>'.$inner.'</span>';
+	}, $html);
 
 	// <h2><p>…</p><div></div></h2> → <h2>…</h2>
 	$html = preg_replace_callback('/<(h[1-6])(\b[^>]*)>(.*?)<\/\1>/is', function ($m) {

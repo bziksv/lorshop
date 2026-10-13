@@ -3,7 +3,7 @@ if(!$arParams['SECTION']['UF_RECOMMENDED_LIST'])
     return false;
 
 \Bitrix\Main\Page\Asset::getInstance()->addString(
-	'<style>.goods__name__desc{font-weight:400;font-size:smaller;}</style>',
+	'<style>.goods__name__desc{font-weight:400;font-size:smaller;display:block;}</style>',
 	true,
 	\Bitrix\Main\Page\AssetLocation::BEFORE_CSS
 );
