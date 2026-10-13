@@ -114,14 +114,9 @@ $this->setFrameMode(true);
 
 	<div class="tabs">
 		<?if($arResult['DETAIL_TEXT']):?>
-		<?
-		// Inline <style> in WYSIWYG sits under <div.tabs__content> → Nu HTML errors sitewide.
-		// Strip on output (float helpers are cosmetic); keep markup valid.
-		$detailText = preg_replace('#<style\b[^>]*>.*?</style>#is', '', $arResult['DETAIL_TEXT']);
-		?>
 		<a href="#" class="tabs__nav">Описание</a>
 		<div class="tabs__content text">
-			<?=$detailText?>
+			<?=lorshopSanitizeHtml($arResult['DETAIL_TEXT'], $arResult['NAME'])?>
 		</div>
 		<?endif?>
 
@@ -142,7 +137,7 @@ $this->setFrameMode(true);
 		<?if($arResult['PROPERTIES']['CML2_COMPLECT']['VALUE']['TEXT']):?>
 		<a href="#" class="tabs__nav">Комплектация</a>
 		<div class="tabs__content text">
-			<?=$arResult['PROPERTIES']['CML2_COMPLECT']['~VALUE']['TEXT']?>
+			<?=lorshopSanitizeHtml($arResult['PROPERTIES']['CML2_COMPLECT']['~VALUE']['TEXT'], $arResult['NAME'])?>
 		</div>
 		<?endif;?>
 

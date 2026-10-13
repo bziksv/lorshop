@@ -56,7 +56,7 @@ $arSectionDeleteParams = array("CONFIRM" => GetMessage('CT_BCSL_ELEMENT_DELETE_C
 	?>
 	<a href="<?=$section['SECTION_PAGE_URL']?>" class="categories__item">
 		<span class="categories__item_wrapper">
-			<span class="categories__img"><img src="<?=$section['PICTURE']['SRC']?>" alt="categories"></span>
+			<span class="categories__img"><?if(!empty($section['PICTURE']['SRC'])):?><img src="<?=$section['PICTURE']['SRC']?>" alt="<?=htmlspecialchars($section['NAME'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')?>"><?endif;?></span>
 			<span class="categories__title"><?=$section['NAME']?></span>
 		</span>
 	</a>

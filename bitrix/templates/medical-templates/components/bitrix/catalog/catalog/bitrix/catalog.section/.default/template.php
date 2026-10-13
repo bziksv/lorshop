@@ -71,7 +71,7 @@ if(empty($arResult['ITEMS']))
 
 							<div class="goods__counter">
 								<div class="goods__counter_subtract">-</div>
-								<input type="text" class="goods__counter_input" id="goods__counter_input_<?=$arResult['ID']?>" value="1" readonly>
+								<input type="text" class="goods__counter_input" id="goods__counter_input_thumbs_<?=$item['ID']?>" value="1" readonly>
 								<div class="goods__counter_add">+</div>
 							</div>
 							<? if($let >= $arResult["UF_HIDE_PIECE"] && !is_null($arResult["UF_HIDE_PIECE"])): ?>
@@ -95,9 +95,9 @@ if(empty($arResult['ITEMS']))
                         <?else:?>
                             <input type="hidden" name="article" value="<?=$articles[0] ?? ''?>">
 						    <? if($let >= $arResult["UF_HIDE_BUY"] && !is_null($arResult["UF_HIDE_BUY"])): ?>
-                                <a href="javascript:void(0)" class="goods__buy_thumbs" onclick="addToBasket2(<?=$item['ID']?>, $('#goods__counter_input_<?=$item['ID']?>').val(),this);" data-text="Купить"></a>
+                                <a href="javascript:void(0)" class="goods__buy_thumbs" onclick="addToBasket2(<?=$item['ID']?>, $('#goods__counter_input_thumbs_<?=$item['ID']?>').val(),this);" data-text="Купить"></a>
                             <? else:?>
-						        <a href="javascript:void(0)" class="goods__buy_thumbs" onclick="addToBasket2(<?=$item['ID']?>, $('#goods__counter_input_<?=$item['ID']?>').val(),this);">Купить</a>
+						        <a href="javascript:void(0)" class="goods__buy_thumbs" onclick="addToBasket2(<?=$item['ID']?>, $('#goods__counter_input_thumbs_<?=$item['ID']?>').val(),this);">Купить</a>
 						    <? endif; ?>
 						<?endif;?>
 					</div>

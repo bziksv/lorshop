@@ -44,7 +44,7 @@ $this->setFrameMode(true);
 
 					<div class="goods__counter">
 						<div class="goods__counter_subtract">-</div>
-						<input type="text" class="goods__counter_input" id="goods__counter_input_<?=$arItem['ID']?>" value="1" readonly>
+						<input type="text" class="goods__counter_input" id="goods__counter_input_new_<?=$arItem['ID']?>" value="1" readonly>
 						<div class="goods__counter_add">+</div>
 					</div>
 					<span>за штуку</span>
@@ -53,7 +53,7 @@ $this->setFrameMode(true);
                     <a href="javascript:void(0)" class="goods__basket icon-basket" onclick="$('#more_option_<?=$arItem[ID]?>').bPopup({zIndex:1000});"></a>
                 <?else:?>
                     <input type="hidden" name="article" value="<?=$arItem['ARTICLS']['VALUE'][0]?>">
-                    <a href="javascript:void(0)" class="goods__basket icon-basket" onclick="addToBasket2(<?=$arItem['ID']?>, $('#goods__counter_input_<?=$arItem['ID']?>').val(),this);"></a>
+                    <a href="javascript:void(0)" class="goods__basket icon-basket" onclick="addToBasket2(<?=$arItem['ID']?>, $('#goods__counter_input_new_<?=$arItem['ID']?>').val(),this);"></a>
                 <?endif;?>
 			</div>
 		</div>

@@ -1,15 +1,7 @@
 User-Agent: *
-###kabinet i korzina
-Disallow: /personal/*
-Disallow: /personal/cart/
-###o kompanii
-Disallow: /about/
-Disallow: /dostavka/
-Disallow: /klientam/
-Disallow: /kontakty/
-Disallow: /news/
-Disallow: /oplata/
-###################
+Disallow: /?
+Disallow: /*?
+Disallow: /*?*
 Disallow: */index.php
 Disallow: /bitrix/
 Disallow: /*show_include_exec_time=
@@ -49,10 +41,35 @@ Disallow: /bitrix/rk.php
 Disallow: /bitrix/rk.php*
 Disallow: *click.php
 Disallow: *redirect.php
-Disallow: /?
-Disallow: /*?
-Disallow: /*?*
 Disallow: /include/
+###kabinet i korzina
+Disallow: /personal/*
+Disallow: /personal/cart/
+###o kompanii
+Disallow: /about/
+Disallow: /dostavka/
+Disallow: /klientam/
+Disallow: /kontakty/
+Disallow: /news/
+Disallow: /oplata/
+###################
+Disallow: /google2c61de4863474d2b.html
+Disallow: /googled42c8e390426f1db.html
+Disallow: /googlee84fbc11d340a0de.html
+Disallow: /googleff0da0f1125cc1fa.html
+Disallow: /hand1CtoSite.php
+Disallow: /mailru-domainkF2eH8V8PUAbpRso.html
+Disallow: /sect_bottom.php
+Disallow: /sect_sidebar.php
+Disallow: /yandex_a7bd185cfbda2fb4.html
+Disallow: /yandex_bec43908af2b88a4.html
+Disallow: /yandex_f8f022bdeef810b3.html
+Disallow: /catalog/sidebar.php
+Disallow: /desktop_app/
+Disallow: /search/
+Disallow: /site_db/
+Disallow: /test/
+Disallow: /store/
 ###################nenuzhnye kategorii################
 Disallow: /lor-oborudovanie-instrumenty/
 Disallow: /catalog/tonzillor-mm--lor-apparat-ultrazvukovoy-nizkochastotnyy/
@@ -518,6 +535,9 @@ Allow: /catalog/odnorazovye-laringoskopicheskie-klinki-xp-heine-germaniya/klinok
 Allow: /catalog/odnorazovye-laringoskopicheskie-klinki-xp-heine-germaniya/klinok-laringoskopa-odnorazovyy-pryamoy-xp-disposable-macintosh-3-up25sht-heine-germaniya/
 Allow: /catalog/laringoskopicheskie-nabory-pakistan/laringoskopicheskiy-nabor-3-klinka-art-j-13-006-pakistan/
 Allow: /catalog/mikroskopy-chammed-yuzhnaya-koreya/mikroskop-otorinolaringologicheskiy-chammed-c-prinadlezhnostyami-tm03-34-yuzhnaya-koreya/
+######################################
+Clean-param: sphrase_id /catalog/
+Clean-param: clear_cache /catalog/
 ######################################
 Allow: /bitrix/components/
 Allow: /bitrix/cache/

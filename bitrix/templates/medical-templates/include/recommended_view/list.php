@@ -1,9 +1,11 @@
 <div class="goods__list goods__list-2">
     <?
     $arResult = $arParams['DATA'];
+    $recIdPrefix = 'recl'.(int)($arResult['REC_BLOCK'] ?? 0).'_';
     foreach($arResult['ITEMS'] as $item):?>
         <?
         $price = priceDiscount($item['ID']);
+        $counterId = 'goods__counter_input_'.$recIdPrefix.$item['ID'];
         ?>
         <div class="goods__item goods__item_list">
             <?if($item["PRICES"]["BASE"]["DISCOUNT_DIFF_PERCENT"]):?>
@@ -27,7 +29,7 @@
                 <span data-text="за штуку"><?=($item["JS_HIDE"] == "N") ? "за штуку" : "" ?></span>
                 <div class="goods__counter">
                     <div class="goods__counter_subtract">-</div>
-                    <input type="text" class="goods__counter_input" id="goods__counter_input_<?=$item['ID']?>" value="1" readonly>
+                    <input type="text" class="goods__counter_input" id="<?=$counterId?>" value="1" readonly>
                     <div class="goods__counter_add">+</div>
                 </div>
                 <?
@@ -40,7 +42,7 @@
                     <a href="javascript:void(0)" class="goods__buy" onclick="$('#more_option_<?=$item['ID']?>').bPopup({zIndex:1000});" data-text="Купить"><?=($item["JS_HIDE"] == "N") ? "Купить" : "" ?></a>
                 <?else:?>
                     <input type="hidden" name="article" value="<?=$articles[0] ?? ''?>">
-                    <a href="javascript:void(0)" class="goods__buy" onclick="addToBasket2(<?=$item['ID']?>, $('#goods__counter_input_<?=$item['ID']?>').val(),this);" data-text="Купить"><?=($item["JS_HIDE"] == "N") ? "Купить" : "" ?></a>
+                    <a href="javascript:void(0)" class="goods__buy" onclick="addToBasket2(<?=$item['ID']?>, $('#<?=$counterId?>').val(),this);" data-text="Купить"><?=($item["JS_HIDE"] == "N") ? "Купить" : "" ?></a>
                 <?endif;?>
 
             </div>

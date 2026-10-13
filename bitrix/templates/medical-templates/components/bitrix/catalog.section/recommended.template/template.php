@@ -50,12 +50,12 @@ $this->setFrameMode(true);
 						<?endif;?>
 						<div class="goods__counter">
 							<div class="goods__counter_subtract">-</div>
-							<input type="text" class="goods__counter_input" id="goods__counter_input_<?=$arItem['ID']?>" value="1" readonly>
+							<input type="text" class="goods__counter_input" id="goods__counter_input_rsec_<?=$arItem['ID']?>" value="1" readonly>
 							<div class="goods__counter_add">+</div>
 						</div>
 						<span>за штуку</span>
 					</div>
-					<a href="javascript:void(0)" class="goods__basket icon-basket" onclick="addToBasket2(<?=$arItem['ID']?>, $('#goods__counter_input_<?=$arItem['ID']?>').val(),this);"></a>
+					<a href="javascript:void(0)" class="goods__basket icon-basket" onclick="addToBasket2(<?=$arItem['ID']?>, $('#goods__counter_input_rsec_<?=$arItem['ID']?>').val(),this);"></a>
 				</div>
 			</div>
 		</li>

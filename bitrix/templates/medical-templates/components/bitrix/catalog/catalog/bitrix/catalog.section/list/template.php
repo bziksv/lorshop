@@ -29,7 +29,7 @@ if(empty($arResult['ITEMS']))
 				<div class="goods__content">
 					<a href="<?=$item['DETAIL_PAGE_URL'];?>" class="goods__name"><?=$item['IPROPERTY_VALUES']['ELEMENT_PAGE_TITLE']?></a>
 					<div class="goods__text">
-						<?=$item['PREVIEW_TEXT']?>
+						<?=lorshopSanitizeHtml($item['PREVIEW_TEXT'], $item['NAME'])?>
 					</div>
 					
 					<? foreach($item['PROPERTIES']['BADGE']['VALUE'] as $desc => $value): ?>
@@ -63,7 +63,7 @@ if(empty($arResult['ITEMS']))
                     <!--<div class="goods__article">Арт: <?/*=TruncateText($item['PROPERTIES']['CML2_ARTICLE']['VALUE'], 12);*/?></div>-->
 					<div class="goods__counter">
 						<div class="goods__counter_subtract">-</div>
-						<input type="text" class="goods__counter_input" id="goods__counter_input_<?=$item['ID']?>" value="1" readonly>
+						<input type="text" class="goods__counter_input" id="goods__counter_input_list_<?=$item['ID']?>" value="1" readonly>
 						<div class="goods__counter_add">+</div>
 					</div>
                     <?
@@ -81,9 +81,9 @@ if(empty($arResult['ITEMS']))
                     <?else:?>
                         <input type="hidden" name="article" value="<?=$articles[0] ?? ''?>">
                         <? if($let >= $arResult["UF_HIDE_BUY"] && !is_null($arResult["UF_HIDE_BUY"])): ?>
-                            <a href="javascript:void(0)" class="goods__buy" onclick="addToBasket2(<?=$item['ID']?>, $('#goods__counter_input_<?=$item['ID']?>').val(),this);" data-text="Купить"></a>
+                            <a href="javascript:void(0)" class="goods__buy" onclick="addToBasket2(<?=$item['ID']?>, $('#goods__counter_input_list_<?=$item['ID']?>').val(),this);" data-text="Купить"></a>
                         <? else: ?>
-                            <a href="javascript:void(0)" class="goods__buy" onclick="addToBasket2(<?=$item['ID']?>, $('#goods__counter_input_<?=$item['ID']?>').val(),this);">Купить</a>
+                            <a href="javascript:void(0)" class="goods__buy" onclick="addToBasket2(<?=$item['ID']?>, $('#goods__counter_input_list_<?=$item['ID']?>').val(),this);">Купить</a>
                         <? endif; ?>
                     <?endif;?>
 

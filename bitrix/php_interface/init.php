@@ -55,6 +55,117 @@ function priceDiscount($id){
 	return $ar_res_price;
 }
 
+/**
+ * Fix common WYSIWYG HTML issues for Nu HTML / SEO validators:
+ * Cyrillic #ссс hex, missing img alt, empty src, block tags inside headings/span.
+ */
+function lorshopSanitizeHtml($html, $imgAlt = '')
+{
+	if ($html === null || $html === '') {
+		return $html;
+	}
+
+	// Cyrillic "с" typed instead of Latin "c" in #ccc / #cccccc
+	$html = preg_replace('/#[сС]{6}\b/u', '#cccccc', $html);
+	$html = preg_replace('/#[сС]{3}\b/u', '#ccc', $html);
+	$html = preg_replace('#<style\b[^>]*>.*?</style>#is', '', $html);
+
+	// Invalid CSS: background-color: none
+	$html = preg_replace('/background-color\s*:\s*none\b/i', 'background-color: transparent', $html);
+
+	// Unescaped "<" before a digit in text (e.g. "шум <35 дБ")
+	$html = preg_replace('/<(?=\d)/', '&lt;', $html);
+
+	// <figure margin-left: 25px;> → <figure style="margin-left: 25px;">
+	$html = preg_replace_callback('/<figure\b([^>]*)>/i', function ($m) {
+		$attrs = trim($m[1]);
+		if ($attrs === '') {
+			return '<figure>';
+		}
+		// Whole attribute list is raw CSS (no name="value")
+		if (!preg_match('/\b[a-z0-9_-]+\s*=/i', $attrs) && preg_match('/[a-z-]+\s*:/i', $attrs)) {
+			$css = rtrim($attrs, " \t;");
+			return '<figure style="'.htmlspecialchars($css, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'">';
+		}
+		return '<figure'.$m[1].'>';
+	}, $html);
+
+	// Orphan </figure> without any opening <figure>
+	if (!preg_match('/<figure\b/i', $html) && preg_match('/<\/figure>/i', $html)) {
+		$html = preg_replace('/<\/figure>/i', '', $html);
+	}
+
+	$html = preg_replace_callback('/<img\b([^>]*)>/i', function ($m) use ($imgAlt) {
+		$attrs = $m[1];
+		if (preg_match('/\ssrc\s*=\s*(["\'])\s*\1/i', $attrs)) {
+			return '';
+		}
+		if (!preg_match('/\salt\s*=/i', $attrs)) {
+			$alt = htmlspecialchars((string)$imgAlt, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+			$attrs .= ' alt="'.$alt.'"';
+		}
+		return '<img'.$attrs.'>';
+	}, $html);
+
+	// Empty lists / empty strong (often left by WYSIWYG)
+	$html = preg_replace('/<ul\b[^>]*>\s*<\/ul>/i', '', $html);
+	$html = preg_replace('/<ol\b[^>]*>\s*<\/ol>/i', '', $html);
+	$html = preg_replace('/<strong\b[^>]*>\s*<\/strong>/i', '', $html);
+
+	// <strong><p>…</p></strong> → <p>…</p>
+	$html = preg_replace('/<strong\b[^>]*>\s*(<(?:p|div|ul|ol|h[1-6])\b[\s\S]*?<\/(?:p|div|ul|ol|h[1-6])>)\s*<\/strong>/i', '$1', $html);
+
+	// <h2><p>…</p><div></div></h2> → <h2>…</h2>
+	$html = preg_replace_callback('/<(h[1-6])(\b[^>]*)>(.*?)<\/\1>/is', function ($m) {
+		$inner = $m[3];
+		$inner = preg_replace('#</?p\b[^>]*>#i', '', $inner);
+		$inner = preg_replace('#<div\b[^>]*>\s*</div>#i', '', $inner);
+		$inner = preg_replace('#</?div\b[^>]*>#i', '', $inner);
+		return '<'.$m[1].$m[2].'>'.$inner.'</'.$m[1].'>';
+	}, $html);
+
+	// Drop excess closing </div> (stray end tag)
+	$openDiv = preg_match_all('/<div\b/i', $html);
+	$closeDiv = preg_match_all('/<\/div>/i', $html);
+	while ($closeDiv > $openDiv) {
+		$pos = strripos($html, '</div>');
+		if ($pos === false) {
+			break;
+		}
+		$html = substr($html, 0, $pos).substr($html, $pos + 6);
+		$closeDiv--;
+	}
+
+	// Unwrap Bitrix/WYSIWYG font-family <span> wrappers (often illegally wrap ul/h2/h3).
+	// Innermost-first via non-greedy match.
+	for ($i = 0; $i < 24; $i++) {
+		$next = preg_replace(
+			'/<span\b[^>]*\bstyle\s*=\s*"[^"]*font-family:[^"]*"[^>]*>(.*?)<\/span>/is',
+			'$1',
+			$html
+		);
+		if ($next === null || $next === $html) {
+			break;
+		}
+		$html = $next;
+	}
+
+	// Any remaining span that directly wraps a block element
+	for ($i = 0; $i < 8; $i++) {
+		$next = preg_replace(
+			'/<span\b[^>]*>\s*(<(?:ul|ol|h[1-6]|div|table)\b[\s\S]*?<\/(?:ul|ol|h[1-6]|div|table)>)\s*<\/span>/i',
+			'$1',
+			$html
+		);
+		if ($next === null || $next === $html) {
+			break;
+		}
+		$html = $next;
+	}
+
+	return $html;
+}
+
 function EditData ($DATA){
     $MES = array(
         "01" => "Января",

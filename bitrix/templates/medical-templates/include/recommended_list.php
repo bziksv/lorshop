@@ -10,13 +10,14 @@ if(!$arParams['SECTION']['UF_RECOMMENDED_LIST'])
 ?>
 <hr class="hr">
 
-<? foreach ($arParams['SECTION']['UF_RECOMMENDED_LIST'] as $p):
+<? foreach ($arParams['SECTION']['UF_RECOMMENDED_LIST'] as $recBlock => $p):
     $arSlider = explode('@', $p, 3);
     $title = $arSlider[0];
     $jProduct = json_decode($arSlider[1], true);
 
     if($jProduct && $arSlider[2]){
         $arResult = [];
+        $arResult['REC_BLOCK'] = (int)$recBlock;
         $arSelect = Array("ID", "IBLOCK_ID", "NAME", "PREVIEW_PICTURE", "DETAIL_PAGE_URL","PROPERTY_*");
         $arFilter = Array("IBLOCK_ID" => $arParams['SECTION']['IBLOCK_ID'], "ID" => array_keys($jProduct));
         $res = CIBlockElement::GetList(Array(), $arFilter, false, false, $arSelect);
