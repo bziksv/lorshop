@@ -65,6 +65,32 @@ function lorshopSanitizeHtml($html, $imgAlt = '')
 		return $html;
 	}
 
+	// WYSIWYG sometimes pastes a full HTML document into DETAIL_TEXT — keep body only
+	if (preg_match('/<body\b[^>]*>(.*?)<\/body>/is', $html, $m)) {
+		$html = $m[1];
+	}
+	$html = preg_replace('/<!DOCTYPE[^>]*>/i', '', $html);
+	$html = preg_replace('#<head\b[^>]*>.*?</head>#is', '', $html);
+	$html = preg_replace('#<title\b[^>]*>.*?</title>#is', '', $html);
+	$html = preg_replace('#<meta\b[^>]*/?>#is', '', $html);
+	$html = preg_replace('/<\/?(?:html|head|body)\b[^>]*>/i', '', $html);
+
+	// <p>…<ul> — close <p> before a block sibling (invalid inside <p>)
+	$html = preg_replace(
+		'/(<p\b[^>]*>(?:(?!<\/p>).)*?)(?=<(?:ul|ol|div|table|h[1-6])\b)/is',
+		'$1</p>',
+		$html
+	);
+	// <p><ul>…</ul></p> / <p><h2>…</h2></p> — unwrap block-only paragraphs; drop stray </p>
+	$html = preg_replace(
+		'/<p\b[^>]*>\s*(<(?:ul|ol|div|table|h[1-6])\b[\s\S]*?<\/(?:ul|ol|div|table|h[1-6])>)\s*<\/p>/i',
+		'$1',
+		$html
+	);
+	$html = preg_replace('/<p\b[^>]*>\s*(<(?:ul|ol|div|table|h[1-6])\b)/i', '$1', $html);
+	$html = preg_replace('/(<\/(?:ul|ol|div|table|h[1-6])>)\s*<\/p>/i', '$1', $html);
+	$html = preg_replace('/<p\b[^>]*>\s*<\/p>/i', '', $html);
+
 	// Drop H2 that duplicates page H1 (section/product NAME passed as $imgAlt)
 	if ($imgAlt !== '' && $imgAlt !== null) {
 		$titleNorm = preg_replace('/\s+/u', ' ', mb_strtolower(trim(html_entity_decode(str_replace("\xC2\xA0", ' ', strip_tags((string)$imgAlt)), ENT_QUOTES, 'UTF-8')), 'UTF-8'));
@@ -88,6 +114,31 @@ function lorshopSanitizeHtml($html, $imgAlt = '')
 		}
 		return $m[0];
 	}, $html);
+
+	// H3+ appearing before the first H2 (H1→H3 skip while H2 exists later)
+	for ($pass = 0; $pass < 4; $pass++) {
+		if (!preg_match('/<h2\b/i', $html, $h2m, PREG_OFFSET_CAPTURE)) {
+			break;
+		}
+		$pos = $h2m[0][1];
+		$before = substr($html, 0, $pos);
+		if (!preg_match('/<h([3-6])\b/i', $before)) {
+			break;
+		}
+		for ($l = 3; $l <= 6; $l++) {
+			$before = preg_replace('/<h'.$l.'\b/i', '<h__'.$l.'__', $before);
+			$before = preg_replace('/<\/h'.$l.'>/i', '</h__'.$l.'__>', $before);
+		}
+		for ($l = 3; $l <= 6; $l++) {
+			$new = $l - 1;
+			$before = str_replace(
+				['<h__'.$l.'__', '</h__'.$l.'__>'],
+				['<h'.$new, '</h'.$new.'>'],
+				$before
+			);
+		}
+		$html = $before.substr($html, $pos);
+	}
 
 	// Fill skipped heading levels in the fragment (H1→H3, H2→H4, …).
 	// Promote higher levels as a cascade so H4 does not stay after H3→H2.
