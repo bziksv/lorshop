@@ -67,10 +67,13 @@ function lorshopSanitizeHtml($html, $imgAlt = '')
 
 	// Drop H2 that duplicates page H1 (section/product NAME passed as $imgAlt)
 	if ($imgAlt !== '' && $imgAlt !== null) {
-		$titleNorm = preg_replace('/\s+/u', ' ', mb_strtolower(trim(html_entity_decode(str_replace("\xC2\xA0", ' ', strip_tags((string)$imgAlt)), ENT_QUOTES, 'UTF-8'))));
+		$titleNorm = preg_replace('/\s+/u', ' ', mb_strtolower(trim(html_entity_decode(str_replace("\xC2\xA0", ' ', strip_tags((string)$imgAlt)), ENT_QUOTES, 'UTF-8')), 'UTF-8'));
 		if ($titleNorm !== '') {
 			$html = preg_replace_callback('/<h2\b[^>]*>(.*?)<\/h2>/is', function ($m) use ($titleNorm) {
-				$t = preg_replace('/\s+/u', ' ', mb_strtolower(trim(html_entity_decode(str_replace("\xC2\xA0", ' ', strip_tags($m[1])), ENT_QUOTES, 'UTF-8'))));
+				$t = preg_replace('/\s+/u', ' ', mb_strtolower(trim(html_entity_decode(str_replace("\xC2\xA0", ' ', strip_tags($m[1])), ENT_QUOTES, 'UTF-8')), 'UTF-8'));
+				if ($t === null || $t === '') {
+					return $m[0];
+				}
 				return ($t === $titleNorm) ? '' : $m[0];
 			}, $html);
 		}
