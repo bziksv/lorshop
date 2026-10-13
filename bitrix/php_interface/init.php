@@ -76,6 +76,12 @@ function lorshopSanitizeHtml($html, $imgAlt = '')
 		}
 	}
 
+	// After removing duplicate H2 (or WYSIWYG that starts at H3): avoid H1→H3 skip
+	if (preg_match('/<h3\b/i', $html) && !preg_match('/<h2\b/i', $html)) {
+		$html = preg_replace('/<h3\b/i', '<h2', $html);
+		$html = preg_replace('/<\/h3>/i', '</h2>', $html);
+	}
+
 	// Cyrillic "с" typed instead of Latin "c" in #ccc / #cccccc
 	$html = preg_replace('/#[сС]{6}\b/u', '#cccccc', $html);
 	$html = preg_replace('/#[сС]{3}\b/u', '#ccc', $html);
