@@ -76,10 +76,44 @@ function lorshopSanitizeHtml($html, $imgAlt = '')
 		}
 	}
 
-	// After removing duplicate H2 (or WYSIWYG that starts at H3): avoid H1→H3 skip
-	if (preg_match('/<h3\b/i', $html) && !preg_match('/<h2\b/i', $html)) {
-		$html = preg_replace('/<h3\b/i', '<h2', $html);
-		$html = preg_replace('/<\/h3>/i', '</h2>', $html);
+	// Drop empty headings (e.g. <h2><br></h2>) — they block level promotion and confuse SEO tools
+	$html = preg_replace_callback('/<(h[1-6])\b[^>]*>(.*?)<\/\1>/is', function ($m) {
+		$inner = $m[2];
+		$text = preg_replace('/\s+/u', '', html_entity_decode(str_replace("\xC2\xA0", ' ', strip_tags($inner)), ENT_QUOTES, 'UTF-8'));
+		if ($text === '' && !preg_match('/<(?:img|picture|svg|video|iframe)\b/i', $inner)) {
+			return '';
+		}
+		return $m[0];
+	}, $html);
+
+	// Fill skipped heading levels in the fragment (H1→H3, H2→H4, …).
+	// Promote higher levels as a cascade so H4 does not stay after H3→H2.
+	for ($need = 2; $need <= 5; $need++) {
+		if (preg_match('/<h'.$need.'\b/i', $html)) {
+			continue;
+		}
+		$hasHigher = false;
+		for ($l = $need + 1; $l <= 6; $l++) {
+			if (preg_match('/<h'.$l.'\b/i', $html)) {
+				$hasHigher = true;
+				break;
+			}
+		}
+		if (!$hasHigher) {
+			continue;
+		}
+		for ($l = $need + 1; $l <= 6; $l++) {
+			$html = preg_replace('/<h'.$l.'\b/i', '<h__'.$l.'__', $html);
+			$html = preg_replace('/<\/h'.$l.'>/i', '</h__'.$l.'__>', $html);
+		}
+		for ($l = $need + 1; $l <= 6; $l++) {
+			$new = $l - 1;
+			$html = str_replace(
+				['<h__'.$l.'__', '</h__'.$l.'__>'],
+				['<h'.$new, '</h'.$new.'>'],
+				$html
+			);
+		}
 	}
 
 	// Cyrillic "с" typed instead of Latin "c" in #ccc / #cccccc
