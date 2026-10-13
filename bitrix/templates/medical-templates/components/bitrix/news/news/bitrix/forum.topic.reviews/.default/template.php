@@ -127,7 +127,7 @@ foreach ($arResult["MESSAGES"] as $res):
 	if ($arResult["SHOW_POST_FORM"] == "Y")
 	{
 		?>
-		<div class="reviews-post-reply-buttons"><noindex>
+		<div class="reviews-post-reply-buttons"><!--noindex-->
 			<a href="#review_anchor" style='margin-left:0;' title="<?=GetMessage("F_NAME")?>" class="reviews-button-small" bx-act="reply"><?=GetMessage("F_NAME")?></a>
 <?			if ($arResult["FORUM"]["ALLOW_QUOTE"] == "Y")
 			{
@@ -174,7 +174,7 @@ foreach ($arResult["MESSAGES"] as $res):
 			</span><?
 			}
 ?>
-		</noindex></div>
+		<!--/noindex--></div>
 <?
 	}
 ?>

@@ -48,7 +48,7 @@ if (!empty($arResult))
 	{
 		?><tr id="<? echo $idCompareRow.$arElement['PARENT_ID']; ?>">
 			<td><a href="<?=$arElement["DETAIL_PAGE_URL"]?>"><?=$arElement["NAME"]?></a></td>
-			<td><noindex><a href="javascript:void(0);"  data-id="<? echo $arElement['PARENT_ID']; ?>" rel="nofollow"><?=GetMessage("CATALOG_DELETE")?></a></noindex></td>
+						<td><!--noindex--><a href="javascript:void(0);"  data-id="<? echo $arElement['PARENT_ID']; ?>" rel="nofollow"><?=GetMessage("CATALOG_DELETE")?></a><!--/noindex--></td>
 		</tr><?
 	}
 ?>

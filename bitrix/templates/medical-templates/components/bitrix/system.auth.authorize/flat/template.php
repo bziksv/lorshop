@@ -92,12 +92,12 @@ document.getElementById('bx_auth_secure').style.display = '';
 	</form>
 
 
-	<noindex>
+	<!--noindex-->
 		<div class="bx-authform-link-container">
 			<a href="<?=$arResult["AUTH_FORGOT_PASSWORD_URL"]?>" rel="nofollow"><?=GetMessage("AUTH_FORGOT_PASSWORD_2")?></a> |
 			<a href="<?=$arResult["AUTH_REGISTER_URL"]?>" rel="nofollow"><?=GetMessage("AUTH_REGISTER")?></a>
 		</div>
-	</noindex>
+	<!--/noindex-->
 
 
 </div>

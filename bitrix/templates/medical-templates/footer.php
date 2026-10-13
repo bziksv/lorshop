@@ -84,7 +84,7 @@
 			</div>
 		</div>
 
-		<div><noindex>Мы используем файлы <a target="_blank" style="color: #fff;" href="/upload/legal/legal-cookie.png">cookies</a> для повышения удобства использования сайта, настройки рекламы и анализа трафика. Продолжая посещать наш сайт, вы даёте <a target="_blank" style="color: #fff;" href="/upload/legal/legal-consent.png">согласие на обработку персональных данных</a>, принимаете <a target="_blank" style="color: #fff;" href="/upload/legal/legal-personal-data.png">политику обработки персональных данных</a> и соглашаетесь с <a target="_blank" style="color: #fff;" href="/upload/legal/legal-recommendation.png">правилами применения рекомендательных технологий</a>. Чтобы отключить cookies, измените соответствующие настройки в браузере.</noindex></div>
+		<div><!--noindex-->Мы используем файлы <a target="_blank" style="color: #fff;" href="/upload/legal/legal-cookie.png">cookies</a> для повышения удобства использования сайта, настройки рекламы и анализа трафика. Продолжая посещать наш сайт, вы даёте <a target="_blank" style="color: #fff;" href="/upload/legal/legal-consent.png">согласие на обработку персональных данных</a>, принимаете <a target="_blank" style="color: #fff;" href="/upload/legal/legal-personal-data.png">политику обработки персональных данных</a> и соглашаетесь с <a target="_blank" style="color: #fff;" href="/upload/legal/legal-recommendation.png">правилами применения рекомендательных технологий</a>. Чтобы отключить cookies, измените соответствующие настройки в браузере.<!--/noindex--></div>
 
 	</div>
 </div>

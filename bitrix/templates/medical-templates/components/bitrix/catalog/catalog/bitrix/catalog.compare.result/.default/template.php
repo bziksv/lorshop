@@ -129,7 +129,7 @@ if (!empty($arResult["SHOW_FIELDS"]))
 					case "NAME":
 						?><a href="<?=$arElement["DETAIL_PAGE_URL"]?>"><?=$arElement[$code]?></a>
 						<?if($arElement["CAN_BUY"]):?>
-						<noindex><br /><a class="bx_bt_button bx_small" href="<?=$arElement["BUY_URL"]?>" rel="nofollow"><?=GetMessage("CATALOG_COMPARE_BUY"); ?></a></noindex>
+						<!--noindex--><br /><a class="bx_bt_button bx_small" href="<?=$arElement["BUY_URL"]?>" rel="nofollow"><?=GetMessage("CATALOG_COMPARE_BUY"); ?></a><!--/noindex-->
 						<?elseif(!empty($arResult["PRICES"]) || is_array($arElement["PRICE_MATRIX"])):?>
 						<br /><?=GetMessage("CATALOG_NOT_AVAILABLE")?>
 						<?endif;
