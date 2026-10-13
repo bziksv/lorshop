@@ -1,8 +1,10 @@
 <?php
 if(!$arParams['SECTION']['UF_TAGS_ACTIVE'])
     return false;
-?>
 
+global $APPLICATION;
+ob_start();
+?>
 <style>
     .tags-list{
         margin-bottom: 30px;
@@ -193,6 +195,13 @@ if(!$arParams['SECTION']['UF_TAGS_ACTIVE'])
         opacity: 0.25;
     }
 </style>
+<?php
+\Bitrix\Main\Page\Asset::getInstance()->addString(
+	ob_get_clean(),
+	true,
+	\Bitrix\Main\Page\AssetLocation::BEFORE_CSS
+);
+?>
 
 <div class="tags-list">
 
@@ -200,8 +209,12 @@ if(!$arParams['SECTION']['UF_TAGS_ACTIVE'])
         <ul class="tag-slider sub-links-2">
             <? foreach ($arParams['SECTION']['UF_TAGS_LIST'] as $tags):
                 $arTags = explode('@', $tags, 2);
+                $tagHref = isset($arTags[1]) ? trim($arTags[1]) : '';
+                if ($tagHref !== '' && preg_match('#^(.*?/search/\?q=)([^&]*)(.*)$#u', $tagHref, $tagM)) {
+                    $tagHref = $tagM[1] . rawurlencode(rawurldecode(str_replace('+', ' ', $tagM[2]))) . $tagM[3];
+                }
                 ?>
-            <li><a href="<?=$arTags[1]?>"><?=$arTags[0]?></a></li>
+            <li><a href="<?=htmlspecialcharsbx($tagHref)?>"><?=htmlspecialcharsbx($arTags[0])?></a></li>
             <? endforeach; ?>
         </ul>
         <div class="navi">

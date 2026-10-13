@@ -114,9 +114,14 @@ $this->setFrameMode(true);
 
 	<div class="tabs">
 		<?if($arResult['DETAIL_TEXT']):?>
+		<?
+		// Inline <style> in WYSIWYG sits under <div.tabs__content> → Nu HTML errors sitewide.
+		// Strip on output (float helpers are cosmetic); keep markup valid.
+		$detailText = preg_replace('#<style\b[^>]*>.*?</style>#is', '', $arResult['DETAIL_TEXT']);
+		?>
 		<a href="#" class="tabs__nav">Описание</a>
 		<div class="tabs__content text">
-			<?=$arResult['DETAIL_TEXT']?>
+			<?=$detailText?>
 		</div>
 		<?endif?>
 
