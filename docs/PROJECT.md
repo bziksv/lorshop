@@ -131,6 +131,8 @@ git add … && git commit -m "…" && git push origin main
 
 **Запрещено:** автодеплой на prod, правки на prod без commit, `scp` файлов кода.
 
+Чеклист «заказ со второго клика» (для клонов medical-templates): [`CHECKOUT-FIRST-CLICK.md`](CHECKOUT-FIRST-CLICK.md).
+
 ## Проверка
 
 ```bash
