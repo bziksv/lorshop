@@ -55,7 +55,7 @@ lorshop/                         # workspace (Mac)
 
 ## Локальная разработка (Mac, soft)
 
-Порты: **8098** (nginx), **9098** (php-fpm). MySQL 3306 (Homebrew).
+Порты: **8098** (nginx), **9098** (php-fpm). PHP **8.2** (`brew php@8.2`). MySQL 3306 (Homebrew).
 
 ```bash
 cd lorshop.ru
@@ -139,6 +139,6 @@ curl -sS -o /dev/null -w '%{http_code}\n' http://127.0.0.1:8098/
 curl -sS -o /dev/null -w '%{http_code}\n' http://127.0.0.1:8098/catalog/
 ```
 
-## Совместимость PHP 8.3
+## Совместимость PHP 8.2
 
-В `index.php` (блок популярных категорий) ключи массива были без кавычек (`$arSection[ID]`) — на PHP 8 это fatal. Для локалки исправлено на `$arSection['ID']` и т.п.
+Локальный php-fpm — Homebrew `php@8.2`. На PHP 8 ключи массива без кавычек (`$arSection[ID]`) — fatal; в `index.php` и шаблонах приведено к `$arSection['ID']` и т.п.

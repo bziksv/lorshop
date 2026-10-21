@@ -2,9 +2,14 @@
 set -e
 cd "$(dirname "$0")/.."
 SITE_ROOT="$(pwd)"
-PHP83=/opt/homebrew/opt/php@8.3
+PHP82=/opt/homebrew/opt/php@8.2
 NGINX=/opt/homebrew/bin/nginx
 RUN_DIR="$SITE_ROOT/.local/run"
+
+if [ ! -x "$PHP82/sbin/php-fpm" ]; then
+  echo "PHP 8.2 not found at $PHP82 — install: brew install php@8.2"
+  exit 1
+fi
 
 mkdir -p "$RUN_DIR"
 
@@ -56,7 +61,7 @@ cp "$SITE_ROOT/.local/php/php.ini" "$RUN_DIR/php.ini"
 
 export PHPRC="$RUN_DIR/php.ini"
 
-"$PHP83/sbin/php-fpm" -y "$RUN_DIR/fpm.conf" &
+"$PHP82/sbin/php-fpm" -y "$RUN_DIR/fpm.conf" &
 FPM_PID=$!
 sleep 1
 
@@ -69,9 +74,10 @@ fi
 sleep 1
 
 HTTP=$(curl -sS -o /tmp/lorshop-check.html -w '%{http_code}' --max-time 60 http://127.0.0.1:8098/ || echo 000)
+PHP_VER=$("$PHP82/bin/php" -r 'echo PHP_VERSION;')
 
 echo "soft http://127.0.0.1:8098/ → HTTP $HTTP"
-echo "php-fpm :9098 (ondemand, max 2 workers, 512M)"
+echo "php-fpm $PHP_VER :9098 (ondemand, max 2 workers, 512M)"
 echo "stop: ./scripts/stop-dev.sh"
 
 if [ "$HTTP" = "000" ]; then
