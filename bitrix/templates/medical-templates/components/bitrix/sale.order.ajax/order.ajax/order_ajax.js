@@ -177,23 +177,34 @@ BX.namespace('BX.Sale.OrderAjaxComponent');
 					form.querySelector('input[type=hidden][name=sessid]').value = BX.bitrix_sessid();
 				}
 
-				BX.ajax.submitAjax(
-					BX('bx-soa-order-form'),
-					{
-						url: this.ajaxUrl,
-						method: 'POST',
-						dataType: 'json',
-						data: {
-							via_ajax: 'Y',
-							action: 'saveOrderAjax',
-							sessid: BX.bitrix_sessid(),
-							SITE_ID: this.siteId,
-							signedParamsString: this.signedParamsString
-						},
-						onsuccess: BX.proxy(this.saveOrderWithJson, this),
-						onfailure: BX.proxy(this.handleNotRedirected, this)
-					}
-				);
+				// Prefer submitAjax (needs main/core_ajax.js). Fall back to legacy submit
+				// when the extension is not loaded on the page.
+				if (BX.type.isFunction(BX.ajax.submitAjax))
+				{
+					var saveData = {
+						via_ajax: 'Y',
+						sessid: BX.bitrix_sessid(),
+						SITE_ID: this.siteId,
+						signedParamsString: this.signedParamsString
+					};
+					saveData[this.params.ACTION_VARIABLE || 'soa-action'] = 'saveOrderAjax';
+
+					BX.ajax.submitAjax(
+						BX('bx-soa-order-form'),
+						{
+							url: this.ajaxUrl,
+							method: 'POST',
+							dataType: 'json',
+							data: saveData,
+							onsuccess: BX.proxy(this.saveOrderWithJson, this),
+							onfailure: BX.proxy(this.handleNotRedirected, this)
+						}
+					);
+				}
+				else
+				{
+					BX.ajax.submit(BX('bx-soa-order-form'), BX.proxy(this.saveOrder, this));
+				}
 			}
 			else
 			{
@@ -243,9 +254,18 @@ BX.namespace('BX.Sale.OrderAjaxComponent');
 						}
 						BX.cleanNode(this.savedFilesBlockNode);
 						this.endLoader();
+						if (this.pendingOrderSave)
+						{
+							this.pendingOrderSave = false;
+							if (this.isOrderSaveAllowed())
+							{
+								this.doSaveAction();
+							}
+						}
 					}, this),
 					onfailure: BX.delegate(function(){
 						this.endLoader();
+						this.pendingOrderSave = false;
 					}, this)
 				});
 			}
@@ -367,6 +387,34 @@ BX.namespace('BX.Sale.OrderAjaxComponent');
 			{
 				this.handleNotRedirected();
 			}
+		},
+
+		saveOrder: function(result)
+		{
+			var res, redirected = false, jsonStart;
+
+			if (!BX.type.isString(result))
+			{
+				this.saveOrderWithJson(result);
+				return;
+			}
+
+			// safari mobile fix + strip PHP notices before JSON
+			result = result.replace(/<a href="\S*">(\S*)<\/a>/g, '$1');
+			jsonStart = result.indexOf('{');
+			if (jsonStart > 0)
+			{
+				result = result.substr(jsonStart);
+			}
+
+			res = BX.parseJSON(result);
+			if (res && res.order)
+			{
+				this.saveOrderWithJson(res);
+				return;
+			}
+
+			this.handleNotRedirected();
 		},
 
 		handleNotRedirected: function()
@@ -1728,12 +1776,21 @@ BX.namespace('BX.Sale.OrderAjaxComponent');
 
 			this.hideCustomConsentError();
 
-			if (this.isValidForm())
+			if (!this.isValidForm())
 			{
-				this.allowOrderSave();
-				this.doSaveAction();
+				return BX.PreventDefault(event);
 			}
 
+			this.allowOrderSave();
+
+			// If a refreshOrderAjax is still running, queue save for when it finishes.
+			if (this.BXFormPosting === true)
+			{
+				this.pendingOrderSave = true;
+				return BX.PreventDefault(event);
+			}
+
+			this.doSaveAction();
 			return BX.PreventDefault(event);
 		},
 
