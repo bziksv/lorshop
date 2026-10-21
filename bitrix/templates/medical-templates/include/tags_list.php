@@ -6,193 +6,134 @@ global $APPLICATION;
 ob_start();
 ?>
 <style>
-    .tags-list{
-        margin-bottom: 30px;
-    }
-    .sub-links-2 {
-        font-size: 14px;
-        font-weight: 500;
-        padding: 0;
-        margin-right: 120px !important;
-        list-style: none;
-        padding-left: 20px;
-        padding-right: 20px;
-        width: auto;
-        position: relative;
-        overflow: hidden;
-        display: block !important;
-    }
-
-    .sub-links-2.open,
-    .sub-links-2.opens {
-        height: auto;
-        margin: 0 auto 30px auto !important;
-    }
-
-    .sub-links-2 li {
-        margin: 5px;
-        display: inline-block;
-    }
-
-    .sub-links-2 a {
-        color: #626e6f;
-        border: #626e6f solid 1px;
-        padding: 4px 15px;
-        border-radius: 5px;
-        display: inline-block;
-        text-decoration: none;
-    }
-
-    .sub-links-2 a:hover {
-        text-decoration: none;
-        color: #ffffff;
-        border: #4b937b solid 1px;
-        background: #4b937b;
-    }
-
-    .sub-links-2 .slick-arrow {
-        margin: auto;
-    }
-
-
-    .sub-links-2 .slick-arrow:before {
-        color: #66b3d4;
-        font-size: 26px;
-        vertical-align: middle;
+    .tags-list {
+        margin: 0 0 24px;
     }
 
     .subcategories {
-        display: -webkit-box;
-        display: -webkit-flex;
-        display: -moz-box;
-        display: -ms-flexbox;
         display: flex;
+        flex-direction: column;
+        gap: 12px;
         position: relative;
     }
 
-    .subcategories .navi {
+    .tags-scroll {
+        position: relative;
+        min-width: 0;
+    }
+
+    .tags-scroll:not(.is-expanded)::after {
+        content: "";
         position: absolute;
-        bottom: 0;
+        top: 0;
         right: 0;
+        bottom: 0;
+        width: 40px;
+        pointer-events: none;
+        background: linear-gradient(to right, rgba(255,255,255,0), #fff 90%);
     }
 
-    .subcategories .navi span {
-        cursor: pointer;
-        color: #626e6f;
-        text-decoration: dotted underline;
-        font-size: 14px;
+    .sub-links-2 {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 8px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        scroll-snap-type: x proximity;
     }
 
-    .subcategories .navi span:hover {
+    .sub-links-2::-webkit-scrollbar {
+        display: none;
+    }
+
+    .sub-links-2.is-open {
+        flex-wrap: wrap;
+        overflow: visible;
+        row-gap: 8px;
+    }
+
+    .sub-links-2 li {
+        margin: 0;
+        flex: 0 0 auto;
+        scroll-snap-align: start;
+        max-width: 100%;
+    }
+
+    .sub-links-2 a {
+        display: inline-block;
+        max-width: 100%;
+        box-sizing: border-box;
+        padding: 8px 14px;
+        border: 1px solid #c5ced0;
+        border-radius: 20px;
+        color: #5b6273;
+        background: #fff;
+        font-size: 13px;
+        font-weight: 500;
+        line-height: 1.3;
+        text-decoration: none;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transition: color .2s ease, background .2s ease, border-color .2s ease;
+    }
+
+    .sub-links-2.is-open a {
+        white-space: normal;
+    }
+
+    .sub-links-2 a:hover {
+        color: #fff;
+        border-color: #4b937b;
+        background: #4b937b;
         text-decoration: none;
     }
 
-    .slick-next:before {
-        content: "\f105";
-        font-family: FontAwesome;
-        display: inline-block;
-        font-weight: 400;
-        font-style: normal;
-        line-height: 1;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        color: #66b3d4;
-        font-size: 40px;
+    .subcategories .navi {
+        display: flex;
+        justify-content: flex-end;
     }
 
-    .slick-prev:before {
-        content: "\f104";
-        font-family: FontAwesome;
-        display: inline-block;
-        font-weight: 400;
-        font-style: normal;
-        line-height: 1;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        color: #66b3d4;
-        font-size: 40px;
-    }
-
-    .sub-links-2 .slick-next:after {
-        display: inline-block;
-        content: '';
-        width: 30px;
-        height: 39px;
-        background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAgCAMAAAAynjhNAAAAaVBMVEX///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9tAe1xAAAAI3RSTlP9B/Xv6OHZvqmfinVqYFVLQjgmFxAf0Mcws5SAf5W0xi/PHr7jVrUAAABxSURBVCjP3dJZCoAgEIBhbbN9TyvTrPsfMgxDTPQAPn84/gMDIJynZVyHvmubuqIlK/INkStLkzgCQLFQfEjmiGAX7/L1afAth2u2hluMnexLo5K5/bde7OUAy5kvjX5poZXr4f5LDaP8l2az0Gwc8gMuITF/U6PCDgAAAABJRU5ErkJggg==') no-repeat;
-        position: absolute;
-        top: -3px;
-        left: -27px;
-    }
-
-    .sub-links-2 .slick-prev:after {
-        content: '';
-        display: inline-block;
-        width: 30px;
-        height: 39px;
-        background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAgCAMAAAAynjhNAAAAaVBMVEX///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9tAe1xAAAAI3RSTlP9DfXo4dnQx7Spn4p1amBVS0I4Jhcfve4wBZSAf5XvLwS+HhGGx64AAAB2SURBVCjP3ZJHDoAwEAND7733hP8/kioZEpC4hvPI9qy0hBC10nTDtErbcQev84MwipO0zopcUZoNjxfcn3jiMVtxy2GKcuCjfD7S2AbGtpgW1ZDueDXxMGxTuc0v+N0c5dimcpuPXz6V3cv/Y86e1N7wtONmATKLMZCWB9C4AAAAAElFTkSuQmCC') no-repeat;
-        position: absolute;
-        top: -3px;
-        right: -27px;
-    }
-
-    .slick-prev,
-    .slick-next {
-        width: auto;
-        height: auto;
-        z-index: 1;
-    }
-
-    .slick-next {
-        right: 2px;
-    }
-
-    .slick-prev {
-        left: 2px;
-    }
-
-    /* Arrows */
-
-    .slick-prev,
-    .slick-next {
-        position: absolute;
-        display: block;
-        height: 30px;
-        width: 20px;
-        line-height: 0px;
-        font-size: 0px;
-        cursor: pointer;
+    .subcategories .navi .tags-toggle {
+        appearance: none;
+        -webkit-appearance: none;
+        border: 0;
         background: transparent;
-        color: transparent;
-        top: 50%;
-        -webkit-transform: translate(0, -50%);
-        -ms-transform: translate(0, -50%);
-        -moz-transform: translate(0, -50%);
-        -o-transform: translate(0, -50%);
-        transform: translate(0, -50%);
+        color: #8a9399;
         padding: 0;
-        border: none;
-        outline: none;
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 1.2;
+        cursor: pointer;
+        text-decoration: underline;
+        text-decoration-style: dotted;
+        text-underline-offset: 3px;
     }
 
-    .slick-prev:hover,
-    .slick-prev:focus,
-    .slick-next:hover,
-    .slick-next:focus {
-        outline: none;
-        background: transparent;
-        color: transparent;
+    .subcategories .navi .tags-toggle:hover {
+        color: #5b6273;
+        text-decoration-style: solid;
     }
 
-    .slick-prev:hover:before,
-    .slick-prev:focus:before,
-    .slick-next:hover:before,
-    .slick-next:focus:before {
-        opacity: 1;
-    }
+    @media (max-width: 767px) {
+        .tags-list {
+            margin-bottom: 18px;
+        }
 
-    .slick-prev.slick-disabled:before,
-    .slick-next.slick-disabled:before {
-        opacity: 0.25;
+        .sub-links-2 a {
+            padding: 7px 12px;
+            font-size: 12px;
+            max-width: min(280px, 78vw);
+        }
+
+        .subcategories .navi .tags-toggle {
+            font-size: 12px;
+        }
     }
 </style>
 <?php
@@ -204,71 +145,49 @@ ob_start();
 ?>
 
 <div class="tags-list">
-
     <div class="subcategories">
-        <ul class="tag-slider sub-links-2">
-            <? foreach ($arParams['SECTION']['UF_TAGS_LIST'] as $tags):
-                $arTags = explode('@', $tags, 2);
-                $tagHref = isset($arTags[1]) ? trim($arTags[1]) : '';
-                if ($tagHref !== '' && preg_match('#^(.*?/search/\?q=)([^&]*)(.*)$#u', $tagHref, $tagM)) {
-                    $tagHref = $tagM[1] . rawurlencode(rawurldecode(str_replace('+', ' ', $tagM[2]))) . $tagM[3];
-                }
-                ?>
-            <li><a href="<?=htmlspecialcharsbx($tagHref)?>"><?=htmlspecialcharsbx($arTags[0])?></a></li>
-            <? endforeach; ?>
-        </ul>
+        <div class="tags-scroll">
+            <ul class="tag-slider sub-links-2">
+                <? foreach ($arParams['SECTION']['UF_TAGS_LIST'] as $tags):
+                    $arTags = explode('@', $tags, 2);
+                    $tagHref = isset($arTags[1]) ? trim($arTags[1]) : '';
+                    if ($tagHref !== '' && preg_match('#^(.*?/search/\?q=)([^&]*)(.*)$#u', $tagHref, $tagM)) {
+                        $tagHref = $tagM[1] . rawurlencode(rawurldecode(str_replace('+', ' ', $tagM[2]))) . $tagM[3];
+                    }
+                    ?>
+                <li><a href="<?=htmlspecialcharsbx($tagHref)?>"><?=htmlspecialcharsbx($arTags[0])?></a></li>
+                <? endforeach; ?>
+            </ul>
+        </div>
         <div class="navi">
-            <span class="open">Показать все</span>
-            <span hidden class="close">Свернуть</span>
+            <button type="button" class="tags-toggle open">Показать все</button>
+            <button type="button" class="tags-toggle close" hidden>Свернуть</button>
         </div>
     </div>
-
 </div>
 
-<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
-<script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
 <script>
+(function ($) {
+    $(function () {
+        var $scroll = $(".tags-list .tags-scroll");
+        var $list = $(".tags-list .sub-links-2");
+        var $open = $(".tags-list .open");
+        var $close = $(".tags-list .close");
 
-    $('.tag-slider').slick({
-        dots: false,
-        arrows: true,
-        infinite: true,
-        autoplay: true,
-        variableWidth: true,
-        centerMode: true,
-        slidesToShow: 3,
-        responsive: [
-            {
-                breakpoint: 767,
-                settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1
-                }
-            }
-        ]
-    });
-
-    $(document).ready(function() {
-        $(".subcategories .open").click(function(){
-            $(this).hide();
-            $(".subcategories .close").show();
-            $(".subcategories .sub-links-2").addClass("open");
-            $('.tag-slider').slick('unslick');
+        $open.on("click", function () {
+            $open.prop("hidden", true);
+            $close.prop("hidden", false);
+            $list.addClass("is-open");
+            $scroll.addClass("is-expanded");
         });
-        $(".subcategories .close").click(function(){
-            $(this).hide();
-            $(".subcategories .open").show();
-            $(".subcategories .sub-links-2").removeClass("open");
-            $('.tag-slider').slick({
-                dots: false,
-                arrows: true,
-                infinite: true,
-                autoplay: true,
-                variableWidth: true,
-                centerMode: true,
-                slidesToShow: 3,
-            });
+
+        $close.on("click", function () {
+            $close.prop("hidden", true);
+            $open.prop("hidden", false);
+            $list.removeClass("is-open");
+            $scroll.removeClass("is-expanded");
+            $scroll.find(".sub-links-2").scrollLeft(0);
         });
     });
-
+})(jQuery);
 </script>

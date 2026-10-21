@@ -26,49 +26,7 @@ $APPLICATION->SetTitle("lorshop.ru - поставки медицинской т�
 );?>
 <div class="container">
 	<div class="wrapper">
-		<div class="sidebar">
-			 <?$APPLICATION->IncludeComponent(
-	"bitrix:menu", 
-	"catalog.menu", 
-	array(
-		"ALLOW_MULTI_SELECT" => "N",
-		"CHILD_MENU_TYPE" => "left",
-		"COMPONENT_TEMPLATE" => "catalog.menu",
-		"DELAY" => "N",
-		"MAX_LEVEL" => "4",
-		"MENU_CACHE_GET_VARS" => array(
-		),
-		"MENU_CACHE_TIME" => "3600",
-		"MENU_CACHE_TYPE" => "N",
-		"MENU_CACHE_USE_GROUPS" => "Y",
-		"MENU_THEME" => "site",
-		"ROOT_MENU_TYPE" => "catalog",
-		"USE_EXT" => "N",
-		"COMPOSITE_FRAME_MODE" => "A",
-		"COMPOSITE_FRAME_TYPE" => "AUTO"
-	),
-	false
-);?> <?$APPLICATION->IncludeComponent(
-	"bitrix:news.line",
-	"banners",
-	Array(
-		"ACTIVE_DATE_FORMAT" => "d.m.Y",
-		"CACHE_GROUPS" => "Y",
-		"CACHE_TIME" => "300",
-		"CACHE_TYPE" => "A",
-		"COMPONENT_TEMPLATE" => "banners",
-		"DETAIL_URL" => "",
-		"FIELD_CODE" => array(0=>"CODE",1=>"PREVIEW_PICTURE",2=>"",),
-		"IBLOCKS" => array(0=>"6",),
-		"IBLOCK_TYPE" => "sliders",
-		"NEWS_COUNT" => "3",
-		"SORT_BY1" => "ACTIVE_FROM",
-		"SORT_BY2" => "SORT",
-		"SORT_ORDER1" => "DESC",
-		"SORT_ORDER2" => "ASC"
-	)
-);?>
-		</div>
+		<? require $_SERVER['DOCUMENT_ROOT'].'/catalog/sidebar.php'; ?>
 		<div class="main overflow-hidden">
 			<div class="title">
 				Популярные категории
@@ -253,6 +211,9 @@ $APPLICATION->SetTitle("lorshop.ru - поставки медицинской т�
                     ),
                         false
                     );?>
+			</div>
+			<div class="catalog-banners">
+				<? require $_SERVER['DOCUMENT_ROOT'].'/catalog/banners.php'; ?>
 			</div>
 		</div>
 	</div>

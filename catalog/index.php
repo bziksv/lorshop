@@ -309,6 +309,10 @@ $APPLICATION->IncludeComponent(
 	false
 );?>
 
+<div class="catalog-banners">
+	<? require $_SERVER['DOCUMENT_ROOT'].'/catalog/banners.php'; ?>
+</div>
+
 </div>
 
 </div>

@@ -134,10 +134,14 @@ $this->setFrameMode(true);
 		</div>
 		<?endif?>
 
-		<?if($arResult['PROPERTIES']['CML2_COMPLECT']['VALUE']['TEXT']):?>
+		<?
+		$complectValue = $arResult['PROPERTIES']['CML2_COMPLECT']['~VALUE'] ?? $arResult['PROPERTIES']['CML2_COMPLECT']['VALUE'] ?? '';
+		$complectText = is_array($complectValue) ? (string)($complectValue['TEXT'] ?? '') : (string)$complectValue;
+		?>
+		<?if($complectText !== ''):?>
 		<a href="#" class="tabs__nav">Комплектация</a>
 		<div class="tabs__content text">
-			<?=lorshopSanitizeHtml($arResult['PROPERTIES']['CML2_COMPLECT']['~VALUE']['TEXT'], $arResult['NAME'])?>
+			<?=lorshopSanitizeHtml($complectText, $arResult['NAME'])?>
 		</div>
 		<?endif;?>
 

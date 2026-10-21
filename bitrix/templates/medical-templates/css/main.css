@@ -693,6 +693,11 @@ ol,ul
     display: block;
     margin-bottom: 30px;
 }
+/* ≥768: баннеры только в сайдбаре; <768: только после контента */
+.catalog-banners
+{
+    display: none;
+}
 .main
 {
     padding-left: 15px;
@@ -3379,7 +3384,8 @@ ol,ul
     }
     .slider__item
     {
-        padding: 55px 60px 117px;
+        background-position: left center;
+        padding: 48px 56px 90px 24px;
     }
     .slider .lSPager.lSpg
     {
@@ -3397,7 +3403,14 @@ ol,ul
     }
     .slider__title
     {
-        font-size: 16px;
+        font-size: 22px;
+        min-height: 0;
+        max-width: 100%;
+    }
+    .slider__title span
+    {
+        font-size: 1.35em;
+        letter-spacing: .02em;
     }
     .header__top
     {
@@ -4021,6 +4034,8 @@ ol,ul
     {
         display: block;
         margin: 0;
+        width: 100%;
+        max-width: 100%;
     }
     .sidebar
     {
@@ -4029,6 +4044,11 @@ ol,ul
         display: -webkit-box;
         display: -webkit-flex;
         justify-content: space-between;
+        -webkit-box-flex: 0;
+        -webkit-flex: 0 0 auto;
+        -ms-flex: 0 0 auto;
+        flex: 0 0 auto;
+        width: 100%;
         max-width: 100%;
         ms-flex-pack: justify;
         padding: 0;
@@ -4039,9 +4059,71 @@ ol,ul
     {
         display: none;
     }
+    .sidebar-banners
+    {
+        display: none;
+    }
+    .catalog-banners
+    {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-flex-wrap: wrap;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 24px;
+        width: 100%;
+    }
+    .catalog-banners .sidebar__ads
+    {
+        -webkit-box-flex: 1;
+        -webkit-flex: 1 1 calc(50% - 7px);
+        -ms-flex: 1 1 calc(50% - 7px);
+        flex: 1 1 calc(50% - 7px);
+        max-width: 100%;
+        margin: 0;
+    }
+    .catalog-banners .sidebar__ads img
+    {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
     .slider
     {
         margin-bottom: 14px;
+    }
+    .slider .container
+    {
+        max-width: none;
+        padding-left: 0;
+        padding-right: 0;
+        width: 100%;
+    }
+    .slider__item
+    {
+        background-color: #d5dae3;
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-size: contain;
+        -webkit-aspect-ratio: 1920 / 567;
+        aspect-ratio: 1920 / 567;
+        min-height: 0;
+        padding: 20px 44px 36px 12px;
+    }
+    .slider__title
+    {
+        font-size: 18px;
+        line-height: 1.25;
+        min-height: 0;
+        max-width: 100%;
+    }
+    .slider__title span
+    {
+        font-size: 1.25em;
+        letter-spacing: .02em;
     }
     .sidebar__ads
     {
@@ -4053,9 +4135,30 @@ ol,ul
     }
     .main
     {
-        max-width: none;
+        -webkit-box-flex: 0;
+        -webkit-flex: 0 0 auto;
+        -ms-flex: 0 0 auto;
+        flex: 0 0 auto;
+        width: 100%;
+        max-width: 100%;
         padding: 0 10px 104px;
-        margin: 0 -10px -100px;
+        margin: 0 0 -100px;
+        box-sizing: border-box;
+    }
+    .categories
+    {
+        margin-right: 0;
+        width: 100%;
+    }
+    .full-slider
+    {
+        margin-right: 0;
+        width: 100%;
+    }
+    .goods
+    {
+        margin-left: 0;
+        margin-right: 0;
     }
     .footer__row
     {
@@ -4184,17 +4287,26 @@ ol,ul
     }
     .slider__item
     {
-        padding: 16px 30px 34px;
+        background-size: contain;
+        background-position: center center;
+        padding: 16px 40px 32px 10px;
     }
     .slider__title
     {
-        font-size: 12px;
+        font-size: 16px;
+        line-height: 1.25;
+        min-height: 0;
+    }
+    .slider__title span
+    {
+        font-size: 1.2em;
+        letter-spacing: .02em;
     }
     .slider .lSSlideOuter .lSNext,.slider .lSSlideOuter .lSPrev
     {
-        ms-transform: scale(.6);
-        transform: scale(.6);
-        webkit-transform: scale(.6);
+        ms-transform: scale(.55);
+        transform: scale(.55);
+        webkit-transform: scale(.55);
     }
     .title
     {
@@ -4218,7 +4330,7 @@ ol,ul
     }
     .goods
     {
-        margin: -4px -10px 0;
+        margin: -4px 0 0;
     }
     .goods__desc,.goods__info
     {
@@ -4578,17 +4690,26 @@ ol,ul
 {
     .slider__item
     {
-        padding: 30px 50px 40px;
+        background-size: contain;
+        background-position: center center;
+        padding: 12px 36px 28px 8px;
     }
     .slider__title
     {
-        font-size: 12px;
+        font-size: 15px;
+        line-height: 1.25;
+        min-height: 0;
+    }
+    .slider__title span
+    {
+        font-size: 1.15em;
+        letter-spacing: .01em;
     }
     .slider .lSSlideOuter .lSNext,.slider .lSSlideOuter .lSPrev
     {
-        ms-transform: scale(.8);
-        transform: scale(.8);
-        webkit-transform: scale(.8);
+        ms-transform: scale(.5);
+        transform: scale(.5);
+        webkit-transform: scale(.5);
     }
     .slider .lSPager.lSpg
     {

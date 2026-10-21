@@ -20,6 +20,14 @@ if(empty($code[3])){
 	 $arResult['PROPERTIES']['UF_DELETE_INDEX'] = $arProps['DELETE_INDEX']['VALUE'];
 	}
 }
+
+$deleteIndex = $arResult['PROPERTIES']['UF_DELETE_INDEX'] ?? [];
+if (!is_array($deleteIndex)) {
+	$deleteIndex = ($deleteIndex === false || $deleteIndex === null || $deleteIndex === '')
+		? []
+		: [$deleteIndex];
+}
+$arResult['PROPERTIES']['UF_DELETE_INDEX'] = $deleteIndex;
 //determine if child selected
 
 $bWasSelected = false;
