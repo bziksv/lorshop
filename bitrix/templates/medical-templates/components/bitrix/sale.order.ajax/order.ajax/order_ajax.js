@@ -162,23 +162,12 @@ BX.namespace('BX.Sale.OrderAjaxComponent');
 		{
 			var form;
 
-			// Same flow as gnkmed: validate HTML5 constraints before locking the loader.
-			action = BX.type.isNotEmptyString(action) ? action : 'refreshOrderAjax';
-
-			if (action === 'saveOrderAjax')
-			{
-				form = BX('bx-soa-order-form');
-				if (form && typeof form.checkValidity === 'function' && !form.checkValidity())
-				{
-					form.reportValidity();
-					return;
-				}
-			}
-
 			if (!this.startLoader())
 				return;
 
 			this.firstLoad = false;
+
+			action = BX.type.isNotEmptyString(action) ? action : 'refreshOrderAjax';
 
 			if (action === 'saveOrderAjax')
 			{
@@ -188,30 +177,7 @@ BX.namespace('BX.Sale.OrderAjaxComponent');
 					form.querySelector('input[type=hidden][name=sessid]').value = BX.bitrix_sessid();
 				}
 
-				// Prefer JSON submitAjax (needs core_ajax.js). Fallback: legacy iframe submit.
-				if (BX.type.isFunction(BX.ajax.submitAjax))
-				{
-					var saveData = {
-						via_ajax: 'Y',
-						sessid: BX.bitrix_sessid(),
-						SITE_ID: this.siteId,
-						signedParamsString: this.signedParamsString
-					};
-					saveData[this.params.ACTION_VARIABLE || 'soa-action'] = 'saveOrderAjax';
-
-					BX.ajax.submitAjax(form, {
-						url: this.ajaxUrl,
-						method: 'POST',
-						dataType: 'json',
-						data: saveData,
-						onsuccess: BX.proxy(this.saveOrderWithJson, this),
-						onfailure: BX.proxy(this.handleNotRedirected, this)
-					});
-				}
-				else
-				{
-					BX.ajax.submit(form, BX.proxy(this.saveOrder, this));
-				}
+				BX.ajax.submit(BX('bx-soa-order-form'), BX.proxy(this.saveOrder, this));
 			}
 			else
 			{
@@ -348,76 +314,46 @@ BX.namespace('BX.Sale.OrderAjaxComponent');
 			return true;
 		},
 
-		saveOrderWithJson: function(result)
+		saveOrder: function(result)
 		{
-			var redirected = false;
-
-			if (result && result.order)
+			// safari mobile fix
+			result = result.replace(/<a href="\S*">(\S*)<\/a>/g, '$1');
+			
+			var res = BX.parseJSON(result), redirected = false;
+			if (res && res.order)
 			{
-				result = result.order;
+				result = res.order;
+				this.result.SHOW_AUTH = result.SHOW_AUTH;
+				this.result.AUTH = result.AUTH;
 
-				if (result.REDIRECT_URL)
+				if (this.result.SHOW_AUTH)
 				{
-					if (this.params.USE_ENHANCED_ECOMMERCE === 'Y')
-					{
-						this.setAnalyticsDataLayer('purchase', result.ID);
-					}
-
-					redirected = true;
-					location.href = result.REDIRECT_URL;
-				}
-				else if (result.SHOW_AUTH)
-				{
-					this.result.SHOW_AUTH = result.SHOW_AUTH;
-					this.result.AUTH = result.AUTH;
 					this.editAuthBlock();
 					this.showAuthBlock();
 					this.animateScrollTo(this.authBlockNode);
 				}
 				else
 				{
+					if (result.REDIRECT_URL && result.REDIRECT_URL.length)
+					{
+						if (this.params.USE_ENHANCED_ECOMMERCE === 'Y')
+						{
+							this.setAnalyticsDataLayer('purchase', result.ID);
+						}
+
+						redirected = true;
+						document.location.href = result.REDIRECT_URL;
+					}
+
 					this.showErrors(result.ERROR, true, true);
 				}
 			}
 
 			if (!redirected)
 			{
-				this.handleNotRedirected();
+				this.endLoader();
+				this.disallowOrderSave();
 			}
-		},
-
-		handleNotRedirected: function()
-		{
-			this.endLoader();
-			this.disallowOrderSave();
-		},
-
-		saveOrder: function(result)
-		{
-			var res, jsonStart;
-
-			if (!BX.type.isString(result))
-			{
-				this.saveOrderWithJson(result);
-				return;
-			}
-
-			// safari mobile fix + strip PHP notices/warnings before JSON
-			result = result.replace(/<a href="\S*">(\S*)<\/a>/g, '$1');
-			jsonStart = result.indexOf('{');
-			if (jsonStart > 0)
-			{
-				result = result.substr(jsonStart);
-			}
-
-			res = BX.parseJSON(result);
-			if (res && res.order)
-			{
-				this.saveOrderWithJson(res);
-				return;
-			}
-
-			this.handleNotRedirected();
 		},
 
 		/**
@@ -1765,8 +1701,6 @@ BX.namespace('BX.Sale.OrderAjaxComponent');
 		 */
 		clickOrderSaveAction: function(event)
 		{
-			// gnkmed: always unlock loader before save — otherwise startLoader()
-			// returns false while a prior refreshOrderAjax still holds BXFormPosting.
 			this.disallowOrderSave();
 			this.endLoader();
 

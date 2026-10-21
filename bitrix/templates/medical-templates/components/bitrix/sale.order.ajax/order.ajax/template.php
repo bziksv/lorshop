@@ -285,9 +285,6 @@ switch (LANGUAGE_ID)
 $this->addExternalCss('/bitrix/css/main/bootstrap.css');
 $APPLICATION->SetAdditionalCSS('/bitrix/css/main/themes/'.$arParams['TEMPLATE_THEME'].'/style.css', true);
 $APPLICATION->SetAdditionalCSS($templateFolder.'/style.css', true);
-// Explicit: checkout save needs BX.ajax.submitAjax from core_ajax.js
-// (kernel_main on this site does not include it; kawe/gnkmed avoid the race via older path).
-$this->addExternalJs('/bitrix/js/main/core/core_ajax.js');
 $this->addExternalJs($templateFolder.'/order_ajax.js');
 \Bitrix\Sale\PropertyValueCollection::initJs();
 $this->addExternalJs($templateFolder.'/script.js');
