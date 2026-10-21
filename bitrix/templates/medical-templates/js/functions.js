@@ -323,9 +323,14 @@ $(function() {
         if (this.checked) clearConsentError($(this));
     });
 
+    // Do not intercept Bitrix checkout: BX.ajax.submit → BX.submit clicks a
+    // synthetic submit button, which fires the form "submit" event. Blocking it
+    // (unlike kawe/gnkmed) makes the first "Оформить заказ" click a no-op.
     $(document).on('submit', 'form', function (e) {
-        if ($(this).closest('#callback').length) return;
-        if (!consentOk($(this))) {
+        var $form = $(this);
+        if ($form.closest('#callback').length) return;
+        if ($form.is('#bx-soa-order-form') || $form.closest('#bx-soa-order-form').length) return;
+        if (!consentOk($form)) {
             e.preventDefault();
             e.stopImmediatePropagation();
             return false;
