@@ -177,7 +177,23 @@ BX.namespace('BX.Sale.OrderAjaxComponent');
 					form.querySelector('input[type=hidden][name=sessid]').value = BX.bitrix_sessid();
 				}
 
-				BX.ajax.submit(BX('bx-soa-order-form'), BX.proxy(this.saveOrder, this));
+				BX.ajax.submitAjax(
+					BX('bx-soa-order-form'),
+					{
+						url: this.ajaxUrl,
+						method: 'POST',
+						dataType: 'json',
+						data: {
+							via_ajax: 'Y',
+							action: 'saveOrderAjax',
+							sessid: BX.bitrix_sessid(),
+							SITE_ID: this.siteId,
+							signedParamsString: this.signedParamsString
+						},
+						onsuccess: BX.proxy(this.saveOrderWithJson, this),
+						onfailure: BX.proxy(this.handleNotRedirected, this)
+					}
+				);
 			}
 			else
 			{
@@ -314,46 +330,49 @@ BX.namespace('BX.Sale.OrderAjaxComponent');
 			return true;
 		},
 
-		saveOrder: function(result)
+		saveOrderWithJson: function(result)
 		{
-			// safari mobile fix
-			result = result.replace(/<a href="\S*">(\S*)<\/a>/g, '$1');
-			
-			var res = BX.parseJSON(result), redirected = false;
-			if (res && res.order)
-			{
-				result = res.order;
-				this.result.SHOW_AUTH = result.SHOW_AUTH;
-				this.result.AUTH = result.AUTH;
+			var redirected = false;
 
-				if (this.result.SHOW_AUTH)
+			if (result && result.order)
+			{
+				result = result.order;
+
+				if (result.REDIRECT_URL)
 				{
+					if (this.params.USE_ENHANCED_ECOMMERCE === 'Y')
+					{
+						this.setAnalyticsDataLayer('purchase', result.ID);
+					}
+
+					redirected = true;
+					location.href = result.REDIRECT_URL;
+				}
+				else if (result.SHOW_AUTH)
+				{
+					this.result.SHOW_AUTH = result.SHOW_AUTH;
+					this.result.AUTH = result.AUTH;
+
 					this.editAuthBlock();
 					this.showAuthBlock();
 					this.animateScrollTo(this.authBlockNode);
 				}
 				else
 				{
-					if (result.REDIRECT_URL && result.REDIRECT_URL.length)
-					{
-						if (this.params.USE_ENHANCED_ECOMMERCE === 'Y')
-						{
-							this.setAnalyticsDataLayer('purchase', result.ID);
-						}
-
-						redirected = true;
-						document.location.href = result.REDIRECT_URL;
-					}
-
 					this.showErrors(result.ERROR, true, true);
 				}
 			}
 
 			if (!redirected)
 			{
-				this.endLoader();
-				this.disallowOrderSave();
+				this.handleNotRedirected();
 			}
+		},
+
+		handleNotRedirected: function()
+		{
+			this.endLoader();
+			this.disallowOrderSave();
 		},
 
 		/**
@@ -1701,9 +1720,6 @@ BX.namespace('BX.Sale.OrderAjaxComponent');
 		 */
 		clickOrderSaveAction: function(event)
 		{
-			this.disallowOrderSave();
-			this.endLoader();
-
 			if (!this.isCustomConsentChecked())
 			{
 				this.showCustomConsentError();
