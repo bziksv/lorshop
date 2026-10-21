@@ -78,8 +78,8 @@
 					 <?=date("Y")?> Все права защищены.
 				</div>
 				<br>
-				<a href="https://prime-ltd.su/" target="_blank" style="position: relative; right: 11px;">
-  					<img src="https://prime-ltd.su/logo/white.svg" style="width: 70%; height: auto;" title="Продвижение сайтов" alt="Продвижение сайтов">
+				<a href="https://prime-ltd.su/" target="_blank" class="footer__prime" rel="noopener noreferrer">
+  					<img src="https://prime-ltd.su/logo/white.svg" class="footer__prime-logo" title="Продвижение сайтов" alt="Продвижение сайтов">
 				</a>
 			</div>
 		</div>

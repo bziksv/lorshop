@@ -1792,6 +1792,18 @@ ol,ul
     right: 100%;
     top: 2px;
 }
+.footer__prime
+{
+    display: inline-block;
+    max-width: 100%;
+}
+.footer__prime-logo
+{
+    display: block;
+    width: 220px;
+    max-width: 100%;
+    height: auto;
+}
 .flex-2
 {
     flex: 1;
