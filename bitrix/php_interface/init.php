@@ -2,6 +2,13 @@
 //IBlock catalog id
 define("IBLOCK_CATALOG","33");
 
+// PHP 8.2: orphaned event OnUserLogin → CGroupAuthProvider::OnUserLogin (method
+// missing) fatals Authorize during guest checkout — loader flashes, order only
+// on 2nd click after session is already set. kawe/gnkmed do not have this row.
+if (function_exists('UnRegisterModuleDependences')) {
+	UnRegisterModuleDependences('main', 'OnUserLogin', 'main', 'CGroupAuthProvider', 'OnUserLogin');
+}
+
 if (
 	(!empty($_REQUEST['success']) && is_string($_REQUEST['success']))
 	|| (!empty($_POST['submit']) && $_SERVER['REQUEST_METHOD'] === 'POST')
