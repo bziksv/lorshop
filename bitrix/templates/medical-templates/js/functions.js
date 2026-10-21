@@ -323,14 +323,16 @@ $(function() {
         if (this.checked) clearConsentError($(this));
     });
 
-    // Do not intercept Bitrix checkout: BX.ajax.submit → BX.submit clicks a
-    // synthetic submit button, which fires the form "submit" event. Blocking it
-    // (unlike kawe/gnkmed) makes the first "Оформить заказ" click a no-op.
+    // Never bind a global document "submit" for all forms — BX.ajax.submit /
+    // BX.submit synthesizes a submit event on #bx-soa-order-form and any
+    // preventDefault there makes the first "Оформить заказ" a no-op (kawe/gnkmed
+    // do not have such a handler). Only touch forms that actually use js-pd-consent.
     $(document).on('submit', 'form', function (e) {
-        var $form = $(this);
-        if ($form.closest('#callback').length) return;
-        if ($form.is('#bx-soa-order-form') || $form.closest('#bx-soa-order-form').length) return;
-        if (!consentOk($form)) {
+        var form = this;
+        if (form.id === 'bx-soa-order-form') return;
+        if ($(form).closest('#callback, #bx-soa-order').length) return;
+        if (!$(form).find('input.js-pd-consent').length) return;
+        if (!consentOk($(form))) {
             e.preventDefault();
             e.stopImmediatePropagation();
             return false;

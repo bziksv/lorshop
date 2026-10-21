@@ -177,7 +177,31 @@ BX.namespace('BX.Sale.OrderAjaxComponent');
 					form.querySelector('input[type=hidden][name=sessid]').value = BX.bitrix_sessid();
 				}
 
-				BX.ajax.submit(BX('bx-soa-order-form'), BX.proxy(this.saveOrder, this));
+				// Prefer XHR submitAjax (no synthetic form submit / iframe).
+				// ACTION_VARIABLE on this site is soa-action, not "action".
+				if (BX.ajax && BX.type.isFunction(BX.ajax.submitAjax))
+				{
+					var saveData = {
+						via_ajax: 'Y',
+						sessid: BX.bitrix_sessid(),
+						SITE_ID: this.siteId,
+						signedParamsString: this.signedParamsString
+					};
+					saveData[this.params.ACTION_VARIABLE || 'soa-action'] = 'saveOrderAjax';
+
+					BX.ajax.submitAjax(form, {
+						url: this.ajaxUrl,
+						method: 'POST',
+						dataType: 'json',
+						data: saveData,
+						onsuccess: BX.proxy(this.saveOrderWithJson, this),
+						onfailure: BX.proxy(this.handleNotRedirected, this)
+					});
+				}
+				else
+				{
+					BX.ajax.submit(form, BX.proxy(this.saveOrder, this));
+				}
 			}
 			else
 			{
@@ -316,17 +340,34 @@ BX.namespace('BX.Sale.OrderAjaxComponent');
 
 		saveOrder: function(result)
 		{
-			// safari mobile fix
+			// safari mobile fix (iframe BX.ajax.submit HTML body)
 			result = result.replace(/<a href="\S*">(\S*)<\/a>/g, '$1');
-			
-			var res = BX.parseJSON(result), redirected = false;
-			if (res && res.order)
+
+			var res = BX.parseJSON(result);
+			this.saveOrderWithJson(res || {});
+		},
+
+		saveOrderWithJson: function(result)
+		{
+			var redirected = false;
+
+			if (result && result.order)
 			{
-				result = res.order;
+				result = result.order;
 				this.result.SHOW_AUTH = result.SHOW_AUTH;
 				this.result.AUTH = result.AUTH;
 
-				if (this.result.SHOW_AUTH)
+				if (result.REDIRECT_URL && result.REDIRECT_URL.length)
+				{
+					if (this.params.USE_ENHANCED_ECOMMERCE === 'Y')
+					{
+						this.setAnalyticsDataLayer('purchase', result.ID);
+					}
+
+					redirected = true;
+					document.location.href = result.REDIRECT_URL;
+				}
+				else if (this.result.SHOW_AUTH)
 				{
 					this.editAuthBlock();
 					this.showAuthBlock();
@@ -334,26 +375,20 @@ BX.namespace('BX.Sale.OrderAjaxComponent');
 				}
 				else
 				{
-					if (result.REDIRECT_URL && result.REDIRECT_URL.length)
-					{
-						if (this.params.USE_ENHANCED_ECOMMERCE === 'Y')
-						{
-							this.setAnalyticsDataLayer('purchase', result.ID);
-						}
-
-						redirected = true;
-						document.location.href = result.REDIRECT_URL;
-					}
-
 					this.showErrors(result.ERROR, true, true);
 				}
 			}
 
 			if (!redirected)
 			{
-				this.endLoader();
-				this.disallowOrderSave();
+				this.handleNotRedirected();
 			}
+		},
+
+		handleNotRedirected: function()
+		{
+			this.endLoader();
+			this.disallowOrderSave();
 		},
 
 		/**

@@ -119,7 +119,7 @@
 <script src="<?=SITE_TEMPLATE_PATH?>/js/jquery.bpopup.min.js"></script>
 <script src="<?=SITE_TEMPLATE_PATH?>/js/lightgallery.js"></script>
 <script src="<?=SITE_TEMPLATE_PATH?>/js/jquery-ui.js"></script>
-<script src="<?=SITE_TEMPLATE_PATH?>/js/functions.js"></script>
+<script src="<?=SITE_TEMPLATE_PATH?>/js/functions.js?v=<?=filemtime($_SERVER['DOCUMENT_ROOT'].SITE_TEMPLATE_PATH.'/js/functions.js')?>"></script>
 
 <!-- Yandex.Metrika counter от Prime -->
 <script type="text/javascript" >
