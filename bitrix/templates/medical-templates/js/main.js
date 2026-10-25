@@ -84,7 +84,8 @@ $(function() {
             a = i.val();
         a > 1 && i.val(--a)
     }), $(".toggle__menu").click(function() {
-        return $(this).toggleClass("on"), $(".nav").slideToggle(), !1
+        // Class toggle — slideToggle breaks on flex .nav at 768–900px (stuck height)
+        return $(this).toggleClass("on"), !1
     }), $(".header__contact_mobile").click(function() {
         $(this).toggleClass("active"), $(".header__contact").toggleClass("active")
     }), $("body").innerWidth() > 752 && $(".tabs__nav").eq(0).addClass("active"), $(".tabs__nav").click(function(e) {
