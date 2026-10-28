@@ -125,6 +125,20 @@ $APPLICATION->IncludeComponent(
 
 	<?endforeach;?>
 <?endif;?>
+<?if ($arResult["USE_CAPTCHA"] == "Y"):?>
+		<input type="hidden" name="captcha_sid" value="<?=$arResult["CAPTCHA_CODE"]?>" />
+
+		<div class="bx-authform-formgroup-container">
+			<div class="bx-authform-label-container">
+				<span class="bx-authform-starrequired">*</span><?=GetMessage("CAPTCHA_REGF_PROMT")?>
+			</div>
+			<div class="bx-captcha"><img src="/bitrix/tools/captcha.php?captcha_sid=<?=$arResult["CAPTCHA_CODE"]?>" width="240" height="50" alt="CAPTCHA" /></div>
+			<div class="bx-authform-input-container">
+				<input type="text" name="captcha_word" maxlength="50" value="" autocomplete="off"/>
+			</div>
+		</div>
+
+<?endif?>
 		<div class="bx-authform-formgroup-container">
 			<div class="bx-authform-label-container">
 			</div>
